@@ -1,0 +1,21 @@
+body {
+  font-family: system-ui, sans-serif;
+}
+/* --- card flip essentials --- */
+.perspective {
+  perspective: 1000px;
+}
+.inner {
+  transform-style: preserve-3d;
+  transition: transform 0.5s;
+}
+.inner.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+.front,
+.back {
+  backface-visibility: hidden;
+}
+.back {
+  transform: rotateY(180deg);
+}

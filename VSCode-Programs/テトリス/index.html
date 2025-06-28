@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ABCクッキング教室</title>
+  <!-- Google Fonts: Montserrat -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    /* リセット・基本設定 */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Montserrat', sans-serif; background: #fff; color: #333; line-height: 1.6; }
+    .container { width: 90%; max-width: 1200px; margin: 0 auto; }
+    
+    /* ヘッダー */
+    header { background: #f8f8f8; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 10px 0; position: sticky; top: 0; z-index: 1000; }
+    .header-container { display: flex; justify-content: space-between; align-items: center; }
+    .logo img { height: 50px; }
+    nav ul { list-style: none; display: flex; }
+    nav ul li { margin-left: 20px; }
+    nav ul li a { text-decoration: none; color: #333; font-weight: 700; transition: color 0.3s; }
+    nav ul li a:hover { color: #ff6b6b; }
+    
+    /* ヒーローセクション（スライダー） */
+    #hero { position: relative; overflow: hidden; }
+    .slider { position: relative; }
+    .slide { display: none; }
+    .slide.active { display: block; }
+    .slide img { width: 100%; height: auto; }
+    .slide-caption {
+      position: absolute;
+      bottom: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.5);
+      padding: 20px 30px;
+      border-radius: 10px;
+      text-align: center;
+    }
+    .slide-caption h2 { color: #fff; font-size: 2.5rem; margin-bottom: 10px; }
+    .slide-caption p { color: #fff; font-size: 1.2rem; }
+    .slider-controls {
+      position: absolute;
+      top: 50%;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      transform: translateY(-50%);
+    }
+    .slider-controls span {
+      cursor: pointer;
+      font-size: 2rem;
+      color: #fff;
+      background: rgba(0,0,0,0.3);
+      padding: 10px;
+      border-radius: 50%;
+      margin: 0 10px;
+      transition: background 0.3s;
+    }
+    .slider-controls span:hover { background: rgba(0,0,0,0.6); }
+    
+    /* セクション共通 */
+    .section { padding: 60px 0; text-align: center; }
+    .section h2 { font-size: 2.5rem; margin-bottom: 20px; color: #ff6b6b; }
+    .section p { max-width: 800px; margin: 0 auto 20px; font-size: 1.1rem; }
+    
+    /* 教室紹介 */
+    #about img { max-width: 100%; border-radius: 10px; margin-top: 20px; }
+    
+    /* コースカード */
+    .course-cards { display: flex; flex-wrap: wrap; justify-content: space-around; }
+    .card {
+      background: #fff;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      border-radius: 10px;
+      margin: 20px;
+      overflow: hidden;
+      width: 300px;
+      transition: transform 0.3s;
+    }
+    .card:hover { transform: translateY(-10px); }
+    .card img { width: 100%; height: 200px; object-fit: cover; }
+    .card-content { padding: 20px; }
+    .card-content h3 { font-size: 1.5rem; margin-bottom: 10px; color: #ff6b6b; }
+    .card-content p { font-size: 1rem; }
+    
+    /* お問い合わせフォーム */
+    #contact form { max-width: 600px; margin: 0 auto; text-align: left; }
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; margin-bottom: 5px; font-weight: 700; }
+    .form-group input,
+    .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
+    .btn {
+      display: inline-block;
+      background: #ff6b6b;
+      color: #fff;
+      padding: 12px 30px;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .btn:hover { background: #ff3b3b; }
+    
+    /* フッター */
+    footer { background: #f8f8f8; padding: 20px 0; text-align: center; font-size: 0.9rem; color: #777; }
+    
+    /* レスポンシブ */
+    @media(max-width: 768px) {
+      .header-container { flex-direction: column; }
+      nav ul { margin-top: 10px; }
+      .course-cards { flex-direction: column; align-items: center; }
+    }
+  </style>
+</head>
+<body>
+  <!-- ヘッダー -->
+  <header>
+    <div class="container header-container">
+      <div class="logo">
+        <!-- ロゴ画像は実際の素材に差し替えてください -->
+        <a href="#"><img src="https://via.placeholder.com/150x50?text=Logo" alt="ABCクッキング教室"></a>
+      </div>
+      <nav>
+        <ul>
+          <li><a href="#hero">ホーム</a></li>
+          <li><a href="#about">教室紹介</a></li>
+          <li><a href="#courses">コース</a></li>
+          <li><a href="#contact">お問い合わせ</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+  
+  <!-- ヒーローセクション（スライダー） -->
+  <section id="hero">
+    <div class="slider">
+      <div class="slide active">
+        <img src="https://source.unsplash.com/1600x600/?cooking" alt="料理教室1">
+        <div class="slide-caption">
+          <h2>ABCクッキング教室</h2>
+          <p>あなたの料理の可能性を広げる</p>
+        </div>
+      </div>
+      <div class="slide">
+        <img src="https://source.unsplash.com/1600x600/?kitchen" alt="料理教室2">
+        <div class="slide-caption">
+          <h2>プロフェッショナルな技術</h2>
+          <p>本格的なレッスンで学ぶ</p>
+        </div>
+      </div>
+      <div class="slide">
+        <img src="https://source.unsplash.com/1600x600/?chef" alt="料理教室3">
+        <div class="slide-caption">
+          <h2>楽しいクラス</h2>
+          <p>みんなで作る美味しい時間</p>
+        </div>
+      </div>
+      <div class="slider-controls">
+        <span class="prev">&#10094;</span>
+        <span class="next">&#10095;</span>
+      </div>
+    </div>
+  </section>
+  
+  <!-- 教室紹介 -->
+  <section id="about" class="section">
+    <div class="container">
+      <h2>教室紹介</h2>
+      <p>ABCクッキング教室は、初心者から上級者まで、すべての方に向けた多彩なレッスンを提供しています。<br>
+         最新の設備と経験豊富な講師陣が、あなたの料理スキルを徹底サポートいたします。</p>
+      <img src="https://source.unsplash.com/800x400/?restaurant" alt="教室の様子">
+    </div>
+  </section>
+  
+  <!-- コース紹介 -->
+  <section id="courses" class="section">
+    <div class="container">
+      <h2>コース紹介</h2>
+      <div class="course-cards">
+        <div class="card">
+          <img src="https://source.unsplash.com/400x300/?cooking,class" alt="初心者コース">
+          <div class="card-content">
+            <h3>初心者コース</h3>
+            <p>料理の基本を学び、初めてのキッチンを楽しく体験するコースです。</p>
+          </div>
+        </div>
+        <div class="card">
+          <img src="https://source.unsplash.com/400x300/?food,prep" alt="中級コース">
+          <div class="card-content">
+            <h3>中級コース</h3>
+            <p>さらなるスキルアップを目指し、応用技術やレシピを習得します。</p>
+          </div>
+        </div>
+        <div class="card">
+          <img src="https://source.unsplash.com/400x300/?chef,restaurant" alt="上級コース">
+          <div class="card-content">
+            <h3>上級コース</h3>
+            <p>プロフェッショナルを目指す方へ、実践的な技術と知識を提供します。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- お問い合わせ -->
+  <section id="contact" class="section">
+    <div class="container">
+      <h2>お問い合わせ</h2>
+      <form id="contact-form">
+        <div class="form-group">
+          <label for="name">お名前</label>
+          <input type="text" id="name" name="name" placeholder="例: 山田太郎" required>
+        </div>
+        <div class="form-group">
+          <label for="email">メールアドレス</label>
+          <input type="email" id="email" name="email" placeholder="example@example.com" required>
+        </div>
+        <div class="form-group">
+          <label for="message">メッセージ</label>
+          <textarea id="message" name="message" rows="5" placeholder="お問い合わせ内容" required></textarea>
+        </div>
+        <button type="submit" class="btn">送信</button>
+      </form>
+    </div>
+  </section>
+  
+  <!-- フッター -->
+  <footer>
+    <div class="container">
+      <p>&copy; 2025 ABCクッキング教室. All Rights Reserved.</p>
+    </div>
+  </footer>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // スライダー処理
+      const slides = document.querySelectorAll('.slide');
+      let currentSlide = 0;
+      let slideInterval = setInterval(nextSlide, 5000);
+      
+      const nextButton = document.querySelector('.next');
+      const prevButton = document.querySelector('.prev');
+      
+      nextButton.addEventListener('click', function(){
+        nextSlide();
+        resetInterval();
+      });
+      
+      prevButton.addEventListener('click', function(){
+        prevSlide();
+        resetInterval();
+      });
+      
+      function nextSlide(){
+        slides[currentSlide].classList.remove('active');
+        currentSlide = (currentSlide + 1) % slides.length;
+        slides[currentSlide].classList.add('active');
+      }
+      
+      function prevSlide(){
+        slides[currentSlide].classList.remove('active');
+        currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+        slides[currentSlide].classList.add('active');
+      }
+      
+      function resetInterval(){
+        clearInterval(slideInterval);
+        slideInterval = setInterval(nextSlide, 5000);
+      }
+      
+      // お問い合わせフォームの処理
+      const form = document.getElementById('contact-form');
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        alert('お問い合わせありがとうございます！');
+        form.reset();
+      });
+    });
+  </script>
+</body>
+</html>
