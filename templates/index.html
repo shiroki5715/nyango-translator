@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>価格差分析ツール</title>
+    <style>
+        body { font-family: sans-serif; font-size: 14px; color: #333; }
+        .container { max-width: 800px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
+        h1 { font-size: 24px; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 0; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        textarea { width: 98%; height: 150px; padding: 5px; border: 1px solid #ccc; border-radius: 3px; }
+        input[type="number"] { width: 80px; padding: 5px; border: 1px solid #ccc; border-radius: 3px; }
+        button { background-color: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 3px; cursor: pointer; font-size: 16px; }
+        button:hover { background-color: #0056b3; }
+        .form-group { margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>PCパーツ価格差・自動分析ツール</h1>
+        
+        <div class="form-group">
+            <label for="shop-urls">仕入れ先ショップURL（商品一覧ページ、1行に1URL）</label>
+            <textarea id="shop-urls" placeholder="https://shop.tsukumo.co.jp/search/c:101010/&#10;https://www.dospara.co.jp/search?q=..."></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="profit-margin">価格差（%）以上で通知</label>
+            <input type="number" id="profit-margin" value="15"> %
+        </div>
+
+        <button id="start-button">分析を開始</button>
+
+        <hr>
+
+        <h2>結果</h2>
+        <div id="result-area">
+            <p>ここに分析結果が表示されます。</p>
+        </div>
+    </div>
+</body>
+</html>
