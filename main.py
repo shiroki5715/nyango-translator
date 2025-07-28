@@ -1,6 +1,5 @@
 import asyncio
 import sys
-import random
 from playwright.async_api import async_playwright
 import urllib.parse
 
@@ -8,132 +7,122 @@ import urllib.parse
 if sys.platform == "win32":
     sys.stdout.reconfigure(encoding='utf-8')
 
-async def scrape_tsukumo_category(category_url: str):
+async def scrape_tsukumo(base_keyword: str, filter_keyword: str, limit: int):
     """
-    TSUKUMOの指定されたカテゴリページから全商品情報を取得する関数（ページネーション・ブロック回避対応）
+    TSUKUMOでキーワード検索し、指定件数に達するまでページを巡回しながら、
+    さらに商品名で絞り込み、在庫のある商品だけを取得する関数
     """
-    print(f"TSUKUMOのカテゴリページをスクレイピングします: {category_url}")
+    # ベースのキーワードと絞り込みキーワードを結合
+    final_keyword = f"{base_keyword} {filter_keyword}".strip()
+    encoded_keyword = urllib.parse.quote(final_keyword)
+    start_url = f"https://shop.tsukumo.co.jp/search?end_of_sales=1&keyword={encoded_keyword}"
+    
+    print(f"TSUKUMO検索開始: キーワード='{final_keyword}', 目標件数={limit}")
+    
     results = []
     
     async with async_playwright() as p:
-        # --- ブロック回避策 ---
-        browser = await p.chromium.launch(
-            headless=False, # ブラウザを表示して人間らしいアクセスを偽装
-            channel="chrome", # 通常のChromeを利用
-            args=['--disable-blink-features=AutomationControlled'] # 自動化検知を無効化
-        )
+        browser = await p.chromium.launch(headless=True)
         page = await browser.new_page()
-        
-        current_url = category_url
+        current_url = start_url
         page_num = 1
 
-        while current_url:
-            print(f"{page_num}ページ目にアクセスします: {current_url}")
-            try:
-                await asyncio.sleep(random.uniform(2, 5))
+        try:
+            while current_url and len(results) < limit:
+                print(f"{page_num}ページ目 ({len(results)}/{limit}件): {current_url}")
                 await page.goto(current_url, wait_until="domcontentloaded", timeout=60000)
-
-                # Cookie同意ボタンが表示されていればクリック
-                cookie_button_selector = "#onetrust-accept-btn-handler"
+                
+                product_item_selector = "div.search-box__product"
                 try:
-                    await page.wait_for_selector(cookie_button_selector, timeout=5000)
-                    await page.click(cookie_button_selector)
-                    print("Cookie同意ボタンをクリックしました。")
-                    await page.wait_for_load_state("networkidle", timeout=30000)
+                    await page.wait_for_selector(product_item_selector, timeout=10000)
                 except Exception:
-                    print("Cookie同意ボタンは見つかりませんでした。")
+                    print("このページに商品が見つかりませんでした。")
+                    break
 
-                # 商品リストが表示されるまで待機
-                product_item_selector = "div.product-box__item"
-                await page.wait_for_selector(product_item_selector, timeout=15000)
+                product_elements = await page.query_selector_all(product_item_selector)
                 
-            except Exception as e:
-                print(f"ページへのアクセスまたは要素の待機に失敗しました: {e}")
-                break
+                for item in product_elements:
+                    # 在庫状況をチェック
+                    stock_element = await item.query_selector("div.search_stock_title span")
+                    stock_text = await stock_element.inner_text() if stock_element else ""
+                    if "在庫なし" in stock_text or "販売終了" in stock_text or "入荷待ち" in stock_text:
+                        continue
+
+                    # 商品名を取得して、絞り込みキーワードが含まれているかチェック
+                    name_container = await item.query_selector("span.search-box__product-name")
+                    if not name_container: continue
+                    link_element = await name_container.query_selector("a.product-link")
+                    if not link_element: continue
+                    name_element = await link_element.query_selector("h2.product-name")
+                    if not name_element: continue
+                    
+                    name = await name_element.inner_text()
+                    # 絞り込みキーワードが指定されている場合、商品名に含まれているかチェック (大文字小文字を無視)
+                    if filter_keyword and filter_keyword.lower() not in name.lower():
+                        continue
+
+                    # 価格とURLを取得
+                    price_element = await item.query_selector("p.search-box__price span.text-red__common")
+                    if not price_element: continue
+                    
+                    price_text = await price_element.inner_text()
+                    relative_url = await link_element.get_attribute('href')
+                    price_str = price_text.strip().replace('¥', '').replace(',', '').replace('(税込)', '')
+
+                    if name and price_str.isdigit() and relative_url:
+                        full_url = urllib.parse.urljoin("https://shop.tsukumo.co.jp/", relative_url)
+                        results.append({"name": name, "price": int(price_str), "url": full_url})
+                        
+                        # 目標件数に達したら、このページのループを抜ける
+                        if len(results) >= limit:
+                            break
                 
-            product_elements = await page.query_selector_all(product_item_selector)
-            if not product_elements:
-                print("このページに商品が見つかりませんでした。")
-                break
+                # 次のページへ
+                if len(results) < limit:
+                    next_button = await page.query_selector("a.c-pager__item--next")
+                    if next_button:
+                        next_page_path = await next_button.get_attribute("href")
+                        current_url = urllib.parse.urljoin(current_url, next_page_path)
+                        page_num += 1
+                    else:
+                        current_url = None # 次のページがなければ終了
+                else:
+                    current_url = None # 目標件数に達したら終了
 
-            print(f"{len(product_elements)}件の商品を検出しました。")
-            
-            for item in product_elements:
-                name_element = await item.query_selector("p.product-box__product-name a")
-                name = await name_element.inner_text() if name_element else "N/A"
-                
-                price_element = await item.query_selector("p.product-box__price-regular")
-                price = await price_element.inner_text() if price_element else "N/A"
-                
-                url_element = await item.query_selector("p.product-box__product-name a")
-                product_url = await url_element.get_attribute('href') if url_element else ""
+            return results
 
-                name = name.strip()
-                price_str = price.strip().replace('¥', '').replace(',', '').replace('(税込)', '')
-
-                if name != "N/A" and price_str.isdigit():
-                    full_url = urllib.parse.urljoin("https://shop.tsukumo.co.jp/", product_url)
-                    results.append({"name": name, "price": int(price_str), "url": full_url})
-
-            # 「次へ」ボタンを探す
-            next_button = await page.query_selector("a.c-pager__item--next")
-            if next_button:
-                next_page_path = await next_button.get_attribute("href")
-                current_url = urllib.parse.urljoin(current_url, next_page_path)
-                page_num += 1
-            else:
-                current_url = None
-
-        await browser.close()
-        print(f"TSUKUMOのスクレイピング完了。合計{len(results)}件取得。")
-        return results
-
+        except Exception as e:
+            print(f"TSUKUMOのスクレイピング全体でエラー: {e}")
+            return results # 途中までの結果を返す
+        finally:
+            await browser.close()
 
 async def scrape_amazon(product_name: str):
     """
-    Amazonで指定された商品名を検索し、価格を取得する関数
+    Amazonで指定された商品名を検索し、価格と商品URLを取得する関数
     """
-    print(f"Amazonで「{product_name}」を検索します...")
+    print(f"  Amazon検索: {product_name[:30]}...")
     async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=False) # こちらも念のため表示
+        browser = await p.chromium.launch(headless=True)
         page = await browser.new_page()
-
         try:
-            await asyncio.sleep(random.uniform(1, 3))
-            await page.goto("https://www.amazon.co.jp/", timeout=60000)
-            
-            await page.fill("#twotabsearchtextbox", product_name)
-            await page.press("#twotabsearchtextbox", "Enter")
-            
-            await page.wait_for_load_state("domcontentloaded", timeout=60000)
-
-            price_selector = 'div[data-component-type="s-search-result"] .a-price-whole'
-            
-            await page.wait_for_selector(price_selector, timeout=10000)
-            price_element = await page.query_selector(price_selector)
-            
-            if price_element:
-                price_text = await price_element.inner_text()
-                price = int(price_text.replace(',', ''))
-                print(f"Amazon価格: ¥{price:,}")
-                return price
-            else:
-                return None
-        except Exception as e:
-            print(f"Amazonのスクレイピング中にエラー: {e}")
+            search_url = f"https://www.amazon.co.jp/s?k={urllib.parse.quote(product_name)}"
+            await page.goto(search_url, timeout=60000)
+            result_selector = 'div[data-component-type="s-search-result"]'
+            await page.wait_for_selector(result_selector, timeout=10000)
+            first_result = await page.query_selector(result_selector)
+            if not first_result: return None
+            price_element = await first_result.query_selector(".a-price-whole")
+            url_element = await first_result.query_selector("a.a-link-normal")
+            if price_element and url_element:
+                price = int((await price_element.inner_text()).replace(',', ''))
+                url = urllib.parse.urljoin("https://www.amazon.co.jp/", await url_element.get_attribute('href'))
+                return {"price": price, "url": url}
+            return None
+        except Exception:
             return None
         finally:
             await browser.close()
 
 if __name__ == '__main__':
-    # テスト実行用のコード（直接実行用）
-    async def test_run():
-        # test_url = "https://shop.tsukumo.co.jp/search/c:101520/" # SSD
-        test_url = "https://shop.tsukumo.co.jp/search/c:101010/" # マザーボード
-        data = await scrape_tsukumo_category(test_url)
-        if data:
-            print("\n--- 取得データ (最初の5件) ---")
-            for item in data[:5]:
-                print(item)
-    
-    asyncio.run(test_run())
+    pass

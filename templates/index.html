@@ -7,8 +7,9 @@
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 16px; color: #333; background-color: #f4f4f9; }
         .container { max-width: 1200px; margin: 30px auto; padding: 20px 30px; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         h1 { font-size: 28px; color: #0056b3; border-bottom: 3px solid #0056b3; padding-bottom: 15px; margin-top: 0; }
-        .search-form { display: flex; gap: 10px; margin-bottom: 30px; }
-        input[type="text"] { flex-grow: 1; padding: 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; }
+        .search-form { display: flex; gap: 10px; margin-bottom: 30px; align-items: center; }
+        select, input[type="text"], input[type="number"] { padding: 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; }
+        select { flex-grow: 1; }
         button { background-color: #007bff; color: white; padding: 12px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; transition: background-color 0.3s; }
         button:hover { background-color: #0056b3; }
         h2 { font-size: 22px; color: #333; border-bottom: 2px solid #eee; padding-bottom: 10px; }
@@ -16,6 +17,8 @@
         .results-table th, .results-table td { padding: 12px 15px; border: 1px solid #ddd; text-align: left; vertical-align: middle; }
         .results-table th { background-color: #f8f9fa; font-weight: bold; }
         .results-table tr:nth-child(even) { background-color: #f2f2f2; }
+        .results-table a { color: #0056b3; text-decoration: none; }
+        .results-table a:hover { text-decoration: underline; }
         .no-results { color: #777; font-style: italic; }
         .price-plus { color: #28a745; font-weight: bold; }
         .price-minus { color: #dc3545; font-weight: bold; }
@@ -26,28 +29,30 @@
         <h1>カテゴリ別 価格比較ツール <small>(TSUKUMO vs Amazon)</small></h1>
         
         <form action="/" method="post" class="search-form">
-            <select name="category_keyword" style="flex-grow: 1; padding: 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 16px;" required>
-                <option value="">調査するカテゴリを選択してください</option>
+            <select name="category_keyword" style="flex-grow: 1;" required>
+                <option value="">調査するカテゴリを選択</option>
                 <optgroup label="PCパーツ">
-                    <option value="グラフィックボード">グラフィックボード</option>
-                    <option value="マザーボード">マザーボード</option>
-                    <option value="SSD">SSD</option>
-                    <option value="メモリ">メモリ</option>
-                    <option value="CPU">CPU</option>
-                    <option value="PCケース">PCケース</option>
-                    <option value="電源ユニット">電源ユニット</option>
+                    <option value="グラフィックボード" {% if category_name == 'グラフィックボード' %}selected{% endif %}>グラフィックボード</option>
+                    <option value="マザーボード" {% if category_name == 'マザーボード' %}selected{% endif %}>マザーボード</option>
+                    <option value="SSD" {% if category_name == 'SSD' %}selected{% endif %}>SSD</option>
+                    <option value="メモリ" {% if category_name == 'メモリ' %}selected{% endif %}>メモリ</option>
+                    <option value="CPU" {% if category_name == 'CPU' %}selected{% endif %}>CPU</option>
+                    <option value="PCケース" {% if category_name == 'PCケース' %}selected{% endif %}>PCケース</option>
+                    <option value="電源ユニット" {% if category_name == '電源ユニット' %}selected{% endif %}>電源ユニット</option>
                 </optgroup>
                 <optgroup label="PC周辺機器">
-                    <option value="キーボード">キーボード</option>
-                    <option value="マウス">マウス</option>
-                    <option value="液晶モニター">液晶モニター</option>
+                    <option value="キーボード" {% if category_name == 'キーボード' %}selected{% endif %}>キーボード</option>
+                    <option value="マウス" {% if category_name == 'マウス' %}selected{% endif %}>マウス</option>
+                    <option value="液晶モニター" {% if category_name == '液晶モニター' %}selected{% endif %}>液晶モニター</option>
                 </optgroup>
             </select>
+            <input type="text" name="filter_keyword" placeholder="さらにキーワードで絞り込み (任意)" style="flex-grow: 1;" value="{{ filter_keyword or '' }}">
+            <input type="number" name="limit" min="1" max="50" value="{{ limit or 5 }}" title="Amazonで比較する上位件数">
             <button type="submit">比較開始</button>
         </form>
 
         {% if category_name %}
-            <h2>「{{ category_name }}」の比較結果 (上位5件)</h2>
+            <h2>「{{ category_name }}{% if filter_keyword %} × {{ filter_keyword }}{% endif %}」の比較結果 (上位{{ limit }}件)</h2>
         {% else %}
             <h2>比較結果</h2>
         {% endif %}
@@ -67,8 +72,8 @@
                         {% for item in results %}
                         <tr>
                             <td><a href="{{ item.url }}" target="_blank" title="{{ item.name }}">{{ item.name }}</a></td>
-                            <td>{{ "{:,.0f}".format(item.price) if item.price is not none else 'N/A' }}</td>
-                            <td>{{ "{:,.0f}".format(item.amazon_price) if item.amazon_price is not none else 'N/A' }}</td>
+                            <td><a href="{{ item.url }}" target="_blank">{{ "{:,.0f}".format(item.price) if item.price is not none else 'N/A' }}</a></td>
+                            <td><a href="{{ item.amazon_url }}" target="_blank">{{ "{:,.0f}".format(item.amazon_price) if item.amazon_price is not none else 'N/A' }}</a></td>
                             <td>
                                 {% if item.price_difference is not none %}
                                     <span class="{{ 'price-plus' if item.price_difference > 0 else 'price-minus' }}">
@@ -83,7 +88,7 @@
                     </tbody>
                 </table>
             {% elif request.method == 'POST' %}
-                <p class="no-results">「{{ category_name }}」に該当する商品は見つかりませんでした。</p>
+                <p class="no-results">「{{ category_name }}{% if filter_keyword %}{{ ' × ' + filter_keyword }}{% endif %}」に該当する商品は見つかりませんでした。</p>
             {% else %}
                 <p class="no-results">調査したいカテゴリを選択して、「比較開始」ボタンを押してください。</p>
             {% endif %}
