@@ -5,17 +5,15 @@ from main import scrape_tsukumo, scrape_amazon
 
 app = Flask(__name__)
 
-async def search_and_compare(category_keyword, filter_keyword, limit):
+async def search_and_compare(category_keyword, filter_keyword, limit, profit_margin):
     """
-    TSUKUMOで検索し、結果をAmazon価格と比較する非同期関数
+    TSUKUMOで検索し、結果をAmazon価格と比較し、利益率でフィルタリングする非同期関数
     """
-    # 新しいscrape_tsukumo関数を呼び出す
     tsukumo_results = await scrape_tsukumo(category_keyword, filter_keyword, limit)
     
     if not tsukumo_results:
         return []
 
-    # Amazon検索は、TSUKUMOで見つかった商品に対してのみ実行
     target_items = tsukumo_results
     
     tasks = []
@@ -24,6 +22,7 @@ async def search_and_compare(category_keyword, filter_keyword, limit):
     
     amazon_results = await asyncio.gather(*tasks)
 
+    filtered_results = []
     for i, item in enumerate(target_items):
         amazon_result = amazon_results[i]
         if amazon_result:
@@ -33,12 +32,21 @@ async def search_and_compare(category_keyword, filter_keyword, limit):
             item['amazon_price'] = None
             item['amazon_url'] = f"https://www.amazon.co.jp/s?k={urllib.parse.quote(item['name'])}"
 
-        if item.get('amazon_price') is not None and item.get('price') is not None:
-            item['price_difference'] = item['amazon_price'] - item['price']
+        # TSUKUMOとAmazonの両方で価格が取得できた場合のみ、利益率を計算
+        if item.get('amazon_price') is not None and item.get('price') is not None and item.get('price') > 0:
+            profit = item['amazon_price'] - item['price']
+            margin = (profit / item['price']) * 100
+            
+            item['price_difference'] = profit
+            item['profit_margin'] = margin  # 利益率をitemに追加
+            
+            if margin >= profit_margin:
+                filtered_results.append(item)
         else:
             item['price_difference'] = None
+            item['profit_margin'] = None # 計算できない場合もキーを追加
 
-    return target_items
+    return filtered_results
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -48,18 +56,20 @@ def index():
         
         try:
             limit = int(request.form.get('limit', 5))
+            profit_margin = int(request.form.get('profit_margin', 15))
         except (ValueError, TypeError):
             limit = 5
+            profit_margin = 15
         
         if category_keyword:
-            # 新しい引数でsearch_and_compareを呼び出す
-            results = asyncio.run(search_and_compare(category_keyword, filter_keyword, limit))
+            results = asyncio.run(search_and_compare(category_keyword, filter_keyword, limit, profit_margin))
             return render_template(
                 'index.html', 
                 results=results, 
                 category_name=category_keyword, 
                 filter_keyword=filter_keyword,
-                limit=limit
+                limit=limit,
+                profit_margin=profit_margin
             )
     
     return render_template(
@@ -67,7 +77,8 @@ def index():
         results=None, 
         category_name=None, 
         filter_keyword=None,
-        limit=5
+        limit=5,
+        profit_margin=15
     )
 
 if __name__ == '__main__':

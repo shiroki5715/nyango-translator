@@ -48,6 +48,8 @@
             </select>
             <input type="text" name="filter_keyword" placeholder="さらにキーワードで絞り込み (任意)" style="flex-grow: 1;" value="{{ filter_keyword or '' }}">
             <input type="number" name="limit" min="1" max="50" value="{{ limit or 5 }}" title="Amazonで比較する上位件数">
+            <input type="number" name="profit_margin" min="0" value="{{ profit_margin or 15 }}" title="この利益率(%)以上の商品のみ表示">
+            <span>%</span>
             <button type="submit">比較開始</button>
         </form>
 
@@ -62,10 +64,11 @@
                 <table class="results-table">
                     <thead>
                         <tr>
-                            <th style="width: 50%;">商品名</th>
+                            <th style="width: 45%;">商品名</th>
                             <th>TSUKUMO価格 (円)</th>
                             <th>Amazon価格 (円)</th>
                             <th>価格差 (円)</th>
+                            <th>利益率 (%)</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -78,6 +81,15 @@
                                 {% if item.price_difference is not none %}
                                     <span class="{{ 'price-plus' if item.price_difference > 0 else 'price-minus' }}">
                                         {{ "{:+,}".format(item.price_difference) }}
+                                    </span>
+                                {% else %}
+                                    N/A
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if item.profit_margin is not none %}
+                                    <span class="{{ 'price-plus' if item.profit_margin > 0 else 'price-minus' }}">
+                                        {{ "%.1f" | format(item.profit_margin) }}%
                                     </span>
                                 {% else %}
                                     N/A
