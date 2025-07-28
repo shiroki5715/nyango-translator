@@ -2,40 +2,91 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>価格差分析ツール</title>
+    <title>価格比較ツール - TSUKUMO vs Amazon</title>
     <style>
-        body { font-family: sans-serif; font-size: 14px; color: #333; }
-        .container { max-width: 800px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
-        h1 { font-size: 24px; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 0; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        textarea { width: 98%; height: 150px; padding: 5px; border: 1px solid #ccc; border-radius: 3px; }
-        input[type="number"] { width: 80px; padding: 5px; border: 1px solid #ccc; border-radius: 3px; }
-        button { background-color: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 3px; cursor: pointer; font-size: 16px; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 16px; color: #333; background-color: #f4f4f9; }
+        .container { max-width: 1200px; margin: 30px auto; padding: 20px 30px; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { font-size: 28px; color: #0056b3; border-bottom: 3px solid #0056b3; padding-bottom: 15px; margin-top: 0; }
+        .search-form { display: flex; gap: 10px; margin-bottom: 30px; }
+        input[type="text"] { flex-grow: 1; padding: 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; }
+        button { background-color: #007bff; color: white; padding: 12px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; transition: background-color 0.3s; }
         button:hover { background-color: #0056b3; }
-        .form-group { margin-bottom: 20px; }
+        h2 { font-size: 22px; color: #333; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .results-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .results-table th, .results-table td { padding: 12px 15px; border: 1px solid #ddd; text-align: left; vertical-align: middle; }
+        .results-table th { background-color: #f8f9fa; font-weight: bold; }
+        .results-table tr:nth-child(even) { background-color: #f2f2f2; }
+        .no-results { color: #777; font-style: italic; }
+        .price-plus { color: #28a745; font-weight: bold; }
+        .price-minus { color: #dc3545; font-weight: bold; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>PCパーツ価格差・自動分析ツール</h1>
+        <h1>カテゴリ別 価格比較ツール <small>(TSUKUMO vs Amazon)</small></h1>
         
-        <div class="form-group">
-            <label for="shop-urls">仕入れ先ショップURL（商品一覧ページ、1行に1URL）</label>
-            <textarea id="shop-urls" placeholder="https://shop.tsukumo.co.jp/search/c:101010/&#10;https://www.dospara.co.jp/search?q=..."></textarea>
-        </div>
+        <form action="/" method="post" class="search-form">
+            <select name="category_keyword" style="flex-grow: 1; padding: 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 16px;" required>
+                <option value="">調査するカテゴリを選択してください</option>
+                <optgroup label="PCパーツ">
+                    <option value="グラフィックボード">グラフィックボード</option>
+                    <option value="マザーボード">マザーボード</option>
+                    <option value="SSD">SSD</option>
+                    <option value="メモリ">メモリ</option>
+                    <option value="CPU">CPU</option>
+                    <option value="PCケース">PCケース</option>
+                    <option value="電源ユニット">電源ユニット</option>
+                </optgroup>
+                <optgroup label="PC周辺機器">
+                    <option value="キーボード">キーボード</option>
+                    <option value="マウス">マウス</option>
+                    <option value="液晶モニター">液晶モニター</option>
+                </optgroup>
+            </select>
+            <button type="submit">比較開始</button>
+        </form>
 
-        <div class="form-group">
-            <label for="profit-margin">価格差（%）以上で通知</label>
-            <input type="number" id="profit-margin" value="15"> %
-        </div>
-
-        <button id="start-button">分析を開始</button>
-
-        <hr>
-
-        <h2>結果</h2>
+        {% if category_name %}
+            <h2>「{{ category_name }}」の比較結果 (上位5件)</h2>
+        {% else %}
+            <h2>比較結果</h2>
+        {% endif %}
+        
         <div id="result-area">
-            <p>ここに分析結果が表示されます。</p>
+            {% if results %}
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 50%;">商品名</th>
+                            <th>TSUKUMO価格 (円)</th>
+                            <th>Amazon価格 (円)</th>
+                            <th>価格差 (円)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in results %}
+                        <tr>
+                            <td><a href="{{ item.url }}" target="_blank" title="{{ item.name }}">{{ item.name }}</a></td>
+                            <td>{{ "{:,.0f}".format(item.price) if item.price is not none else 'N/A' }}</td>
+                            <td>{{ "{:,.0f}".format(item.amazon_price) if item.amazon_price is not none else 'N/A' }}</td>
+                            <td>
+                                {% if item.price_difference is not none %}
+                                    <span class="{{ 'price-plus' if item.price_difference > 0 else 'price-minus' }}">
+                                        {{ "{:+,}".format(item.price_difference) }}
+                                    </span>
+                                {% else %}
+                                    N/A
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% elif request.method == 'POST' %}
+                <p class="no-results">「{{ category_name }}」に該当する商品は見つかりませんでした。</p>
+            {% else %}
+                <p class="no-results">調査したいカテゴリを選択して、「比較開始」ボタンを押してください。</p>
+            {% endif %}
         </div>
     </div>
 </body>
