@@ -1,0 +1,22 @@
+2025-07-30 16:30:45,069 [INFO] MakerCacheThread: --- 全カテゴリのメーカーリストのキャッシュを開始します ---
+2025-07-30 16:30:45,069 [INFO] MakerCacheThread: --- 全てのメーカーリストのキャッシュが完了しました ---
+2025-07-30 16:30:45,912 [INFO] MainThread: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.213:5000
+2025-07-30 16:30:45,912 [INFO] MainThread: [33mPress CTRL+C to quit[0m
+2025-07-30 16:32:08,325 [ERROR] Thread-1 (process_request_thread): Exception on / [GET]
+Traceback (most recent call last):
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\flask\app.py", line 1455, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\flask\app.py", line 870, in full_dispatch_request
+    return self.finalize_request(rv)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\flask\app.py", line 889, in finalize_request
+    response = self.make_response(rv)
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\flask\app.py", line 1161, in make_response
+    raise TypeError(
+TypeError: The view function for 'index' did not return a valid response. The function either returned None or ended without a return statement.
+2025-07-30 16:32:08,327 [INFO] Thread-1 (process_request_thread): 127.0.0.1 - - [30/Jul/2025 16:32:08] "[35m[1mGET / HTTP/1.1[0m" 500 -
