@@ -1,0 +1,472 @@
+2025-07-30 09:59:35,518 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.213:5000
+2025-07-30 09:59:35,518 [INFO] [33mPress CTRL+C to quit[0m
+2025-07-30 10:02:20,448 [INFO] 127.0.0.1 - - [30/Jul/2025 10:02:20] "GET / HTTP/1.1" 200 -
+2025-07-30 10:02:24,031 [INFO] ==============================
+2025-07-30 10:02:24,031 [INFO] POSTリクエストを受信しました。
+2025-07-30 10:02:24,031 [INFO] フォームデータ: カテゴリ='グラフィックボード', 絞り込み='', 件数=5, 利益率=15%
+2025-07-30 10:02:24,031 [INFO] 非同期比較処理を呼び出します...
+2025-07-30 10:02:24,033 [INFO] 非同期比較処理を開始します。
+2025-07-30 10:02:24,033 [INFO] scrape_kakaku_com: 開始。カテゴリ='グラフィックボード', 絞り込み=''
+2025-07-30 10:02:24,033 [INFO] 価格.com検索開始: URL='https://kakaku.com/pc/videocard/specsearch_0550/'
+2025-07-30 10:02:24,309 [INFO] これから次のURLにアクセスします: https://kakaku.com/pc/videocard/specsearch_0550/
+2025-07-30 10:02:24,309 [INFO] 1ページ目 (0/5件): https://kakaku.com/pc/videocard/specsearch_0550/
+2025-07-30 10:02:34,994 [ERROR] 価格.comのスクレイピングで致命的なエラーが発生: Page.wait_for_selector: Timeout 10000ms exceeded.
+Call log:
+waiting for locator("table.spec_table") to be visible
+Traceback (most recent call last):
+  File "D:\Program\kakaku-analyzer\main.py", line 63, in scrape_kakaku_com
+    await page.wait_for_selector("table.spec_table", timeout=10000)
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\async_api\_generated.py", line 7831, in wait_for_selector
+    await self._impl_obj.wait_for_selector(
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\_impl\_page.py", line 392, in wait_for_selector
+    return await self._main_frame.wait_for_selector(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\_impl\_frame.py", line 323, in wait_for_selector
+    await self._channel.send("waitForSelector", locals_to_params(locals()))
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\_impl\_connection.py", line 59, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\_impl\_connection.py", line 514, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Page.wait_for_selector: Timeout 10000ms exceeded.
+Call log:
+waiting for locator("table.spec_table") to be visible
+
+2025-07-30 10:02:34,998 [INFO] エラー発生時のページ内容を 'error_page_kakaku.html' に保存しました。
+2025-07-30 10:02:35,044 [INFO] 価格.comから 0 件の商品情報を取得しました。
+2025-07-30 10:02:35,045 [INFO] 処理が完了し、0 件の結果をテンプレートに渡します。
+2025-07-30 10:02:35,045 [INFO] 127.0.0.1 - - [30/Jul/2025 10:02:35] "POST / HTTP/1.1" 200 -
+2025-07-30 10:04:45,240 [INFO] 127.0.0.1 - - [30/Jul/2025 10:04:45] "GET / HTTP/1.1" 200 -
+2025-07-30 10:04:48,124 [INFO] ==============================
+2025-07-30 10:04:48,125 [INFO] POSTリクエストを受信しました。
+2025-07-30 10:04:48,125 [INFO] フォームデータ: カテゴリ='グラフィックボード', 絞り込み='', 件数=5, 利益率=15%
+2025-07-30 10:04:48,125 [INFO] 非同期比較処理を呼び出します...
+2025-07-30 10:04:48,125 [INFO] 非同期比較処理を開始します。
+2025-07-30 10:04:48,125 [INFO] scrape_kakaku_com: 開始。カテゴリ='グラフィックボード', 絞り込み=''
+2025-07-30 10:04:48,125 [INFO] 価格.com検索開始: URL='https://kakaku.com/pc/videocard/specsearch_0550/'
+2025-07-30 10:04:48,416 [INFO] これから次のURLにアクセスします: https://kakaku.com/pc/videocard/specsearch_0550/
+2025-07-30 10:04:48,416 [INFO] 1ページ目 (0/5件): https://kakaku.com/pc/videocard/specsearch_0550/
+2025-07-30 10:04:59,102 [ERROR] 価格.comのスクレイピングで致命的なエラーが発生: Page.wait_for_selector: Timeout 10000ms exceeded.
+Call log:
+waiting for locator("table.spec_table") to be visible
+Traceback (most recent call last):
+  File "D:\Program\kakaku-analyzer\main.py", line 63, in scrape_kakaku_com
+    await page.wait_for_selector("table.spec_table", timeout=10000)
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\async_api\_generated.py", line 7831, in wait_for_selector
+    await self._impl_obj.wait_for_selector(
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\_impl\_page.py", line 392, in wait_for_selector
+    return await self._main_frame.wait_for_selector(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\_impl\_frame.py", line 323, in wait_for_selector
+    await self._channel.send("waitForSelector", locals_to_params(locals()))
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\_impl\_connection.py", line 59, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\_impl\_connection.py", line 514, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Page.wait_for_selector: Timeout 10000ms exceeded.
+Call log:
+waiting for locator("table.spec_table") to be visible
+
+2025-07-30 10:04:59,105 [INFO] エラー発生時のページ内容を 'error_page_kakaku.html' に保存しました。
+2025-07-30 10:04:59,158 [INFO] 価格.comから 0 件の商品情報を取得しました。
+2025-07-30 10:04:59,158 [INFO] 処理が完了し、0 件の結果をテンプレートに渡します。
+2025-07-30 10:04:59,159 [INFO] 127.0.0.1 - - [30/Jul/2025 10:04:59] "POST / HTTP/1.1" 200 -
+2025-07-30 10:05:04,781 [INFO] ==============================
+2025-07-30 10:05:04,781 [INFO] POSTリクエストを受信しました。
+2025-07-30 10:05:04,782 [INFO] フォームデータ: カテゴリ='グラフィックボード', 絞り込み='5070', 件数=5, 利益率=15%
+2025-07-30 10:05:04,782 [INFO] 非同期比較処理を呼び出します...
+2025-07-30 10:05:04,782 [INFO] 非同期比較処理を開始します。
+2025-07-30 10:05:04,782 [INFO] scrape_kakaku_com: 開始。カテゴリ='グラフィックボード', 絞り込み='5070'
+2025-07-30 10:05:04,782 [INFO] 価格.com検索開始: URL='https://kakaku.com/pc/videocard/specsearch_0550/'
+2025-07-30 10:05:05,055 [INFO] これから次のURLにアクセスします: https://kakaku.com/pc/videocard/specsearch_0550/
+2025-07-30 10:05:05,055 [INFO] 1ページ目 (0/5件): https://kakaku.com/pc/videocard/specsearch_0550/
+2025-07-30 10:05:15,769 [ERROR] 価格.comのスクレイピングで致命的なエラーが発生: Page.wait_for_selector: Timeout 10000ms exceeded.
+Call log:
+waiting for locator("table.spec_table") to be visible
+Traceback (most recent call last):
+  File "D:\Program\kakaku-analyzer\main.py", line 63, in scrape_kakaku_com
+    await page.wait_for_selector("table.spec_table", timeout=10000)
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\async_api\_generated.py", line 7831, in wait_for_selector
+    await self._impl_obj.wait_for_selector(
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\_impl\_page.py", line 392, in wait_for_selector
+    return await self._main_frame.wait_for_selector(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\_impl\_frame.py", line 323, in wait_for_selector
+    await self._channel.send("waitForSelector", locals_to_params(locals()))
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\_impl\_connection.py", line 59, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\_impl\_connection.py", line 514, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Page.wait_for_selector: Timeout 10000ms exceeded.
+Call log:
+waiting for locator("table.spec_table") to be visible
+
+2025-07-30 10:05:15,774 [INFO] エラー発生時のページ内容を 'error_page_kakaku.html' に保存しました。
+2025-07-30 10:05:15,846 [INFO] 価格.comから 0 件の商品情報を取得しました。
+2025-07-30 10:05:15,846 [INFO] 処理が完了し、0 件の結果をテンプレートに渡します。
+2025-07-30 10:05:15,846 [INFO] 127.0.0.1 - - [30/Jul/2025 10:05:15] "POST / HTTP/1.1" 200 -
+2025-07-30 10:05:29,599 [INFO] ==============================
+2025-07-30 10:05:29,599 [INFO] POSTリクエストを受信しました。
+2025-07-30 10:05:29,599 [INFO] フォームデータ: カテゴリ='グラフィックボード', 絞り込み='', 件数=5, 利益率=15%
+2025-07-30 10:05:29,599 [INFO] 非同期比較処理を呼び出します...
+2025-07-30 10:05:29,599 [INFO] 非同期比較処理を開始します。
+2025-07-30 10:05:29,599 [INFO] scrape_kakaku_com: 開始。カテゴリ='グラフィックボード', 絞り込み=''
+2025-07-30 10:05:29,599 [INFO] 価格.com検索開始: URL='https://kakaku.com/pc/videocard/specsearch_0550/'
+2025-07-30 10:05:29,874 [INFO] これから次のURLにアクセスします: https://kakaku.com/pc/videocard/specsearch_0550/
+2025-07-30 10:05:29,874 [INFO] 1ページ目 (0/5件): https://kakaku.com/pc/videocard/specsearch_0550/
+2025-07-30 10:05:40,594 [ERROR] 価格.comのスクレイピングで致命的なエラーが発生: Page.wait_for_selector: Timeout 10000ms exceeded.
+Call log:
+waiting for locator("table.spec_table") to be visible
+Traceback (most recent call last):
+  File "D:\Program\kakaku-analyzer\main.py", line 63, in scrape_kakaku_com
+    await page.wait_for_selector("table.spec_table", timeout=10000)
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\async_api\_generated.py", line 7831, in wait_for_selector
+    await self._impl_obj.wait_for_selector(
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\_impl\_page.py", line 392, in wait_for_selector
+    return await self._main_frame.wait_for_selector(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\_impl\_frame.py", line 323, in wait_for_selector
+    await self._channel.send("waitForSelector", locals_to_params(locals()))
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\_impl\_connection.py", line 59, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\_impl\_connection.py", line 514, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Page.wait_for_selector: Timeout 10000ms exceeded.
+Call log:
+waiting for locator("table.spec_table") to be visible
+
+2025-07-30 10:05:40,599 [INFO] エラー発生時のページ内容を 'error_page_kakaku.html' に保存しました。
+2025-07-30 10:05:40,672 [INFO] 価格.comから 0 件の商品情報を取得しました。
+2025-07-30 10:05:40,673 [INFO] 処理が完了し、0 件の結果をテンプレートに渡します。
+2025-07-30 10:05:40,673 [INFO] 127.0.0.1 - - [30/Jul/2025 10:05:40] "POST / HTTP/1.1" 200 -
+2025-07-30 10:14:56,892 [INFO] 127.0.0.1 - - [30/Jul/2025 10:14:56] "GET / HTTP/1.1" 200 -
+2025-07-30 10:15:03,737 [INFO] ==============================
+2025-07-30 10:15:03,737 [INFO] POSTリクエストを受信しました。
+2025-07-30 10:15:03,738 [INFO] フォームデータ: カテゴリ='グラフィックボード', 絞り込み='5070', 件数=5, 利益率=15%
+2025-07-30 10:15:03,738 [INFO] 非同期比較処理を呼び出します...
+2025-07-30 10:15:03,738 [INFO] 非同期比較処理を開始します。
+2025-07-30 10:15:03,738 [INFO] scrape_kakaku_com: 開始。カテゴリ='グラフィックボード', 絞り込み='5070'
+2025-07-30 10:15:03,738 [INFO] 価格.com検索開始: URL='https://kakaku.com/pc/videocard/specsearch_0550/'
+2025-07-30 10:15:04,000 [INFO] これから次のURLにアクセスします: https://kakaku.com/pc/videocard/specsearch_0550/
+2025-07-30 10:15:04,000 [INFO] 1ページ目 (0/5件): https://kakaku.com/pc/videocard/specsearch_0550/
+2025-07-30 10:15:14,710 [ERROR] 価格.comのスクレイピングで致命的なエラーが発生: Page.wait_for_selector: Timeout 10000ms exceeded.
+Call log:
+waiting for locator("table.spec_table") to be visible
+Traceback (most recent call last):
+  File "D:\Program\kakaku-analyzer\main.py", line 63, in scrape_kakaku_com
+    while current_url and len(results) < limit:
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\async_api\_generated.py", line 7831, in wait_for_selector
+    await self._impl_obj.wait_for_selector(
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\_impl\_page.py", line 392, in wait_for_selector
+    return await self._main_frame.wait_for_selector(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\_impl\_frame.py", line 323, in wait_for_selector
+    await self._channel.send("waitForSelector", locals_to_params(locals()))
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\_impl\_connection.py", line 59, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\_impl\_connection.py", line 514, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Page.wait_for_selector: Timeout 10000ms exceeded.
+Call log:
+waiting for locator("table.spec_table") to be visible
+
+2025-07-30 10:15:14,713 [INFO] エラー発生時のページ内容を 'error_page_kakaku.html' に保存しました。
+2025-07-30 10:15:14,801 [INFO] 価格.comから 0 件の商品情報を取得しました。
+2025-07-30 10:15:14,801 [INFO] 処理が完了し、0 件の結果をテンプレートに渡します。
+2025-07-30 10:15:14,802 [INFO] 127.0.0.1 - - [30/Jul/2025 10:15:14] "POST / HTTP/1.1" 200 -
+2025-07-30 10:15:23,285 [INFO] ==============================
+2025-07-30 10:15:23,285 [INFO] POSTリクエストを受信しました。
+2025-07-30 10:15:23,285 [INFO] フォームデータ: カテゴリ='マザーボード', 絞り込み='Z890', 件数=5, 利益率=15%
+2025-07-30 10:15:23,285 [INFO] 非同期比較処理を呼び出します...
+2025-07-30 10:15:23,285 [INFO] 非同期比較処理を開始します。
+2025-07-30 10:15:23,286 [INFO] scrape_kakaku_com: 開始。カテゴリ='マザーボード', 絞り込み='Z890'
+2025-07-30 10:15:23,286 [INFO] 価格.com検索開始: URL='https://kakaku.com/pc/motherboard/specsearch_0540/'
+2025-07-30 10:15:23,540 [INFO] これから次のURLにアクセスします: https://kakaku.com/pc/motherboard/specsearch_0540/
+2025-07-30 10:15:23,540 [INFO] 1ページ目 (0/5件): https://kakaku.com/pc/motherboard/specsearch_0540/
+2025-07-30 10:15:34,192 [ERROR] 価格.comのスクレイピングで致命的なエラーが発生: Page.wait_for_selector: Timeout 10000ms exceeded.
+Call log:
+waiting for locator("table.spec_table") to be visible
+Traceback (most recent call last):
+  File "D:\Program\kakaku-analyzer\main.py", line 63, in scrape_kakaku_com
+    while current_url and len(results) < limit:
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\async_api\_generated.py", line 7831, in wait_for_selector
+    await self._impl_obj.wait_for_selector(
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\_impl\_page.py", line 392, in wait_for_selector
+    return await self._main_frame.wait_for_selector(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\_impl\_frame.py", line 323, in wait_for_selector
+    await self._channel.send("waitForSelector", locals_to_params(locals()))
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\_impl\_connection.py", line 59, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\_impl\_connection.py", line 514, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Page.wait_for_selector: Timeout 10000ms exceeded.
+Call log:
+waiting for locator("table.spec_table") to be visible
+
+2025-07-30 10:15:34,196 [INFO] エラー発生時のページ内容を 'error_page_kakaku.html' に保存しました。
+2025-07-30 10:15:34,267 [INFO] 価格.comから 0 件の商品情報を取得しました。
+2025-07-30 10:15:34,267 [INFO] 処理が完了し、0 件の結果をテンプレートに渡します。
+2025-07-30 10:15:34,267 [INFO] 127.0.0.1 - - [30/Jul/2025 10:15:34] "POST / HTTP/1.1" 200 -
+2025-07-30 10:15:39,221 [INFO] ==============================
+2025-07-30 10:15:39,221 [INFO] POSTリクエストを受信しました。
+2025-07-30 10:15:39,221 [INFO] フォームデータ: カテゴリ='マザーボード', 絞り込み='', 件数=5, 利益率=15%
+2025-07-30 10:15:39,221 [INFO] 非同期比較処理を呼び出します...
+2025-07-30 10:15:39,221 [INFO] 非同期比較処理を開始します。
+2025-07-30 10:15:39,221 [INFO] scrape_kakaku_com: 開始。カテゴリ='マザーボード', 絞り込み=''
+2025-07-30 10:15:39,221 [INFO] 価格.com検索開始: URL='https://kakaku.com/pc/motherboard/specsearch_0540/'
+2025-07-30 10:15:39,480 [INFO] これから次のURLにアクセスします: https://kakaku.com/pc/motherboard/specsearch_0540/
+2025-07-30 10:15:39,480 [INFO] 1ページ目 (0/5件): https://kakaku.com/pc/motherboard/specsearch_0540/
+2025-07-30 10:15:50,157 [ERROR] 価格.comのスクレイピングで致命的なエラーが発生: Page.wait_for_selector: Timeout 10000ms exceeded.
+Call log:
+waiting for locator("table.spec_table") to be visible
+Traceback (most recent call last):
+  File "D:\Program\kakaku-analyzer\main.py", line 63, in scrape_kakaku_com
+    while current_url and len(results) < limit:
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\async_api\_generated.py", line 7831, in wait_for_selector
+    await self._impl_obj.wait_for_selector(
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\_impl\_page.py", line 392, in wait_for_selector
+    return await self._main_frame.wait_for_selector(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\_impl\_frame.py", line 323, in wait_for_selector
+    await self._channel.send("waitForSelector", locals_to_params(locals()))
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\_impl\_connection.py", line 59, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\_impl\_connection.py", line 514, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Page.wait_for_selector: Timeout 10000ms exceeded.
+Call log:
+waiting for locator("table.spec_table") to be visible
+
+2025-07-30 10:15:50,161 [INFO] エラー発生時のページ内容を 'error_page_kakaku.html' に保存しました。
+2025-07-30 10:15:50,209 [INFO] 価格.comから 0 件の商品情報を取得しました。
+2025-07-30 10:15:50,209 [INFO] 処理が完了し、0 件の結果をテンプレートに渡します。
+2025-07-30 10:15:50,209 [INFO] 127.0.0.1 - - [30/Jul/2025 10:15:50] "POST / HTTP/1.1" 200 -
+2025-07-30 10:25:22,781 [INFO] 127.0.0.1 - - [30/Jul/2025 10:25:22] "GET / HTTP/1.1" 200 -
+2025-07-30 10:25:28,659 [INFO] ==============================
+2025-07-30 10:25:28,659 [INFO] POSTリクエストを受信しました。
+2025-07-30 10:25:28,659 [INFO] フォームデータ: カテゴリ='グラフィックボード', 絞り込み='', 件数=5, 利益率=15%
+2025-07-30 10:25:28,659 [INFO] 非同期比較処理を呼び出します...
+2025-07-30 10:25:28,661 [INFO] 非同期比較処理を開始します。
+2025-07-30 10:25:28,661 [INFO] scrape_kakaku_com: 開始。カテゴリ='グラフィックボード', 絞り込み=''
+2025-07-30 10:25:28,661 [INFO] 価格.com検索開始: URL='https://kakaku.com/pc/videocard/specsearch_0550/'
+2025-07-30 10:25:29,122 [INFO] これから次のURLにアクセスします: https://kakaku.com/pc/videocard/specsearch_0550/
+2025-07-30 10:25:29,122 [INFO] 1ページ目 (0/5件): https://kakaku.com/pc/videocard/specsearch_0550/
+2025-07-30 10:25:48,937 [ERROR] 価格.comのスクレイピングで致命的なエラーが発生: Page.wait_for_selector: Timeout 10000ms exceeded.
+Call log:
+waiting for locator("table.spec_table") to be visible
+Traceback (most recent call last):
+  File "D:\Program\kakaku-analyzer\main.py", line 63, in scrape_kakaku_com
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\async_api\_generated.py", line 7831, in wait_for_selector
+    await self._impl_obj.wait_for_selector(
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\_impl\_page.py", line 392, in wait_for_selector
+    return await self._main_frame.wait_for_selector(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\_impl\_frame.py", line 323, in wait_for_selector
+    await self._channel.send("waitForSelector", locals_to_params(locals()))
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\_impl\_connection.py", line 59, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\_impl\_connection.py", line 514, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Page.wait_for_selector: Timeout 10000ms exceeded.
+Call log:
+waiting for locator("table.spec_table") to be visible
+
+2025-07-30 10:25:48,942 [INFO] エラー発生時のページ内容を 'error_page_kakaku.html' に保存しました。
+2025-07-30 10:25:49,032 [INFO] 価格.comから 0 件の商品情報を取得しました。
+2025-07-30 10:25:49,033 [INFO] 処理が完了し、0 件の結果をテンプレートに渡します。
+2025-07-30 10:25:49,033 [INFO] 127.0.0.1 - - [30/Jul/2025 10:25:49] "POST / HTTP/1.1" 200 -
+2025-07-30 10:25:52,736 [INFO] ==============================
+2025-07-30 10:25:52,736 [INFO] POSTリクエストを受信しました。
+2025-07-30 10:25:52,736 [INFO] フォームデータ: カテゴリ='グラフィックボード', 絞り込み='5070', 件数=5, 利益率=15%
+2025-07-30 10:25:52,736 [INFO] 非同期比較処理を呼び出します...
+2025-07-30 10:25:52,737 [INFO] 非同期比較処理を開始します。
+2025-07-30 10:25:52,737 [INFO] scrape_kakaku_com: 開始。カテゴリ='グラフィックボード', 絞り込み='5070'
+2025-07-30 10:25:52,737 [INFO] 価格.com検索開始: URL='https://kakaku.com/pc/videocard/specsearch_0550/'
+2025-07-30 10:25:53,005 [INFO] これから次のURLにアクセスします: https://kakaku.com/pc/videocard/specsearch_0550/
+2025-07-30 10:25:53,005 [INFO] 1ページ目 (0/5件): https://kakaku.com/pc/videocard/specsearch_0550/
+2025-07-30 10:26:10,145 [ERROR] 価格.comのスクレイピングで致命的なエラーが発生: Page.wait_for_selector: Timeout 10000ms exceeded.
+Call log:
+waiting for locator("table.spec_table") to be visible
+Traceback (most recent call last):
+  File "D:\Program\kakaku-analyzer\main.py", line 63, in scrape_kakaku_com
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\async_api\_generated.py", line 7831, in wait_for_selector
+    await self._impl_obj.wait_for_selector(
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\_impl\_page.py", line 392, in wait_for_selector
+    return await self._main_frame.wait_for_selector(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\_impl\_frame.py", line 323, in wait_for_selector
+    await self._channel.send("waitForSelector", locals_to_params(locals()))
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\_impl\_connection.py", line 59, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\_impl\_connection.py", line 514, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Page.wait_for_selector: Timeout 10000ms exceeded.
+Call log:
+waiting for locator("table.spec_table") to be visible
+
+2025-07-30 10:26:10,150 [INFO] エラー発生時のページ内容を 'error_page_kakaku.html' に保存しました。
+2025-07-30 10:26:10,221 [INFO] 価格.comから 0 件の商品情報を取得しました。
+2025-07-30 10:26:10,221 [INFO] 処理が完了し、0 件の結果をテンプレートに渡します。
+2025-07-30 10:26:10,221 [INFO] 127.0.0.1 - - [30/Jul/2025 10:26:10] "POST / HTTP/1.1" 200 -
+2025-07-30 10:52:20,783 [INFO] 127.0.0.1 - - [30/Jul/2025 10:52:20] "GET / HTTP/1.1" 200 -
+2025-07-30 10:52:27,028 [INFO] ==============================
+2025-07-30 10:52:27,028 [INFO] POSTリクエストを受信しました。
+2025-07-30 10:52:27,029 [INFO] フォームデータ: カテゴリ='グラフィックボード', 絞り込み='', 件数=5, 利益率=15%
+2025-07-30 10:52:27,029 [INFO] 非同期比較処理を呼び出します...
+2025-07-30 10:52:27,031 [INFO] 非同期比較処理を開始します。
+2025-07-30 10:52:27,031 [INFO] scrape_kakaku_com: 開始。カテゴリ='グラフィックボード', 絞り込み=''
+2025-07-30 10:52:27,031 [INFO] 価格.com検索開始: URL='https://kakaku.com/pc/videocard/specsearch_0550/'
+2025-07-30 10:52:27,492 [INFO] これから次のURLにアクセスします: https://kakaku.com/pc/videocard/specsearch_0550/
+2025-07-30 10:52:27,492 [INFO] 1ページ目 (0/5件): https://kakaku.com/pc/videocard/specsearch_0550/
+2025-07-30 10:52:40,957 [ERROR] 価格.comのスクレイピングで致命的なエラーが発生: Page.wait_for_selector: Timeout 10000ms exceeded.
+Call log:
+waiting for locator("table.spec_table") to be visible
+Traceback (most recent call last):
+  File "D:\Program\kakaku-analyzer\main.py", line 63, in scrape_kakaku_com
+    )
+      
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\async_api\_generated.py", line 7831, in wait_for_selector
+    await self._impl_obj.wait_for_selector(
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\_impl\_page.py", line 392, in wait_for_selector
+    return await self._main_frame.wait_for_selector(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\_impl\_frame.py", line 323, in wait_for_selector
+    await self._channel.send("waitForSelector", locals_to_params(locals()))
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\_impl\_connection.py", line 59, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\_impl\_connection.py", line 514, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Page.wait_for_selector: Timeout 10000ms exceeded.
+Call log:
+waiting for locator("table.spec_table") to be visible
+
+2025-07-30 10:52:40,961 [INFO] エラー発生時のページ内容を 'error_page_kakaku.html' に保存しました。
+2025-07-30 10:52:41,035 [INFO] 価格.comから 0 件の商品情報を取得しました。
+2025-07-30 10:52:41,035 [INFO] 処理が完了し、0 件の結果をテンプレートに渡します。
+2025-07-30 10:52:41,035 [INFO] 127.0.0.1 - - [30/Jul/2025 10:52:41] "POST / HTTP/1.1" 200 -
+2025-07-30 10:53:04,402 [INFO] 127.0.0.1 - - [30/Jul/2025 10:53:04] "GET / HTTP/1.1" 200 -
+2025-07-30 10:53:13,304 [INFO] ==============================
+2025-07-30 10:53:13,304 [INFO] POSTリクエストを受信しました。
+2025-07-30 10:53:13,304 [INFO] フォームデータ: カテゴリ='マザーボード', 絞り込み='Z890', 件数=5, 利益率=15%
+2025-07-30 10:53:13,304 [INFO] 非同期比較処理を呼び出します...
+2025-07-30 10:53:13,304 [INFO] 非同期比較処理を開始します。
+2025-07-30 10:53:13,304 [INFO] scrape_kakaku_com: 開始。カテゴリ='マザーボード', 絞り込み='Z890'
+2025-07-30 10:53:13,304 [INFO] 価格.com検索開始: URL='https://kakaku.com/pc/motherboard/specsearch_0540/'
+2025-07-30 10:53:13,573 [INFO] これから次のURLにアクセスします: https://kakaku.com/pc/motherboard/specsearch_0540/
+2025-07-30 10:53:13,573 [INFO] 1ページ目 (0/5件): https://kakaku.com/pc/motherboard/specsearch_0540/
+2025-07-30 10:53:24,257 [ERROR] 価格.comのスクレイピングで致命的なエラーが発生: Page.wait_for_selector: Timeout 10000ms exceeded.
+Call log:
+waiting for locator("table.spec_table") to be visible
+Traceback (most recent call last):
+  File "D:\Program\kakaku-analyzer\main.py", line 63, in scrape_kakaku_com
+    )
+      
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\async_api\_generated.py", line 7831, in wait_for_selector
+    await self._impl_obj.wait_for_selector(
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\_impl\_page.py", line 392, in wait_for_selector
+    return await self._main_frame.wait_for_selector(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\_impl\_frame.py", line 323, in wait_for_selector
+    await self._channel.send("waitForSelector", locals_to_params(locals()))
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\_impl\_connection.py", line 59, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\_impl\_connection.py", line 514, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Page.wait_for_selector: Timeout 10000ms exceeded.
+Call log:
+waiting for locator("table.spec_table") to be visible
+
+2025-07-30 10:53:24,263 [INFO] エラー発生時のページ内容を 'error_page_kakaku.html' に保存しました。
+2025-07-30 10:53:24,332 [INFO] 価格.comから 0 件の商品情報を取得しました。
+2025-07-30 10:53:24,332 [INFO] 処理が完了し、0 件の結果をテンプレートに渡します。
+2025-07-30 10:53:24,333 [INFO] 127.0.0.1 - - [30/Jul/2025 10:53:24] "POST / HTTP/1.1" 200 -
+2025-07-30 11:05:32,704 [INFO] 127.0.0.1 - - [30/Jul/2025 11:05:32] "GET / HTTP/1.1" 200 -
+2025-07-30 11:05:36,202 [INFO] ==============================
+2025-07-30 11:05:36,202 [INFO] POSTリクエストを受信しました。
+2025-07-30 11:05:36,203 [INFO] フォームデータ: カテゴリ='グラフィックボード', 絞り込み='', 件数=5, 利益率=15%
+2025-07-30 11:05:36,203 [INFO] 非同期比較処理を呼び出します...
+2025-07-30 11:05:36,203 [INFO] 非同期比較処理を開始します。
+2025-07-30 11:05:36,203 [INFO] scrape_kakaku_com: 開始。カテゴリ='グラフィックボード', 絞り込み=''
+2025-07-30 11:05:36,203 [INFO] 価格.com検索開始: URL='https://kakaku.com/pc/videocard/specsearch_0550/'
+2025-07-30 11:05:36,650 [INFO] これから次のURLにアクセスします: https://kakaku.com/pc/videocard/specsearch_0550/
+2025-07-30 11:05:36,650 [INFO] 1ページ目 (0/5件): https://kakaku.com/pc/videocard/specsearch_0550/
+2025-07-30 11:05:50,080 [ERROR] 価格.comのスクレイピングで致命的なエラーが発生: Page.wait_for_selector: Timeout 10000ms exceeded.
+Call log:
+waiting for locator("table.spec_table") to be visible
+Traceback (most recent call last):
+  File "D:\Program\kakaku-analyzer\main.py", line 63, in scrape_kakaku_com
+    EC.element_to_be_clickable((By.LINK_TEXT, "スペック検索"))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\async_api\_generated.py", line 7831, in wait_for_selector
+    await self._impl_obj.wait_for_selector(
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\_impl\_page.py", line 392, in wait_for_selector
+    return await self._main_frame.wait_for_selector(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\_impl\_frame.py", line 323, in wait_for_selector
+    await self._channel.send("waitForSelector", locals_to_params(locals()))
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\_impl\_connection.py", line 59, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\_impl\_connection.py", line 514, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Page.wait_for_selector: Timeout 10000ms exceeded.
+Call log:
+waiting for locator("table.spec_table") to be visible
+
+2025-07-30 11:05:50,087 [INFO] エラー発生時のページ内容を 'error_page_kakaku.html' に保存しました。
+2025-07-30 11:05:50,178 [INFO] 価格.comから 0 件の商品情報を取得しました。
+2025-07-30 11:05:50,179 [INFO] 処理が完了し、0 件の結果をテンプレートに渡します。
+2025-07-30 11:05:50,179 [INFO] 127.0.0.1 - - [30/Jul/2025 11:05:50] "POST / HTTP/1.1" 200 -
+2025-07-30 11:06:01,407 [INFO] ==============================
+2025-07-30 11:06:01,408 [INFO] POSTリクエストを受信しました。
+2025-07-30 11:06:01,408 [INFO] フォームデータ: カテゴリ='グラフィックボード', 絞り込み='5070', 件数=5, 利益率=15%
+2025-07-30 11:06:01,408 [INFO] 非同期比較処理を呼び出します...
+2025-07-30 11:06:01,408 [INFO] 非同期比較処理を開始します。
+2025-07-30 11:06:01,408 [INFO] scrape_kakaku_com: 開始。カテゴリ='グラフィックボード', 絞り込み='5070'
+2025-07-30 11:06:01,408 [INFO] 価格.com検索開始: URL='https://kakaku.com/pc/videocard/specsearch_0550/'
+2025-07-30 11:06:01,665 [INFO] これから次のURLにアクセスします: https://kakaku.com/pc/videocard/specsearch_0550/
+2025-07-30 11:06:01,665 [INFO] 1ページ目 (0/5件): https://kakaku.com/pc/videocard/specsearch_0550/
+2025-07-30 11:06:12,395 [ERROR] 価格.comのスクレイピングで致命的なエラーが発生: Page.wait_for_selector: Timeout 10000ms exceeded.
+Call log:
+waiting for locator("table.spec_table") to be visible
+Traceback (most recent call last):
+  File "D:\Program\kakaku-analyzer\main.py", line 63, in scrape_kakaku_com
+    EC.element_to_be_clickable((By.LINK_TEXT, "スペック検索"))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\async_api\_generated.py", line 7831, in wait_for_selector
+    await self._impl_obj.wait_for_selector(
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\_impl\_page.py", line 392, in wait_for_selector
+    return await self._main_frame.wait_for_selector(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\_impl\_frame.py", line 323, in wait_for_selector
+    await self._channel.send("waitForSelector", locals_to_params(locals()))
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\_impl\_connection.py", line 59, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Program\kakaku-analyzer\venv\Lib\site-packages\playwright\_impl\_connection.py", line 514, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Page.wait_for_selector: Timeout 10000ms exceeded.
+Call log:
+waiting for locator("table.spec_table") to be visible
+
+2025-07-30 11:06:12,401 [INFO] エラー発生時のページ内容を 'error_page_kakaku.html' に保存しました。
+2025-07-30 11:06:12,470 [INFO] 価格.comから 0 件の商品情報を取得しました。
+2025-07-30 11:06:12,471 [INFO] 処理が完了し、0 件の結果をテンプレートに渡します。
+2025-07-30 11:06:12,471 [INFO] 127.0.0.1 - - [30/Jul/2025 11:06:12] "POST / HTTP/1.1" 200 -

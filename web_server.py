@@ -1,52 +1,8 @@
-import asyncio
-import urllib.parse
 from flask import Flask, render_template, request
-from main import scrape_tsukumo, scrape_amazon
+import urllib.parse
+from main import scrape_kakaku_com, scrape_amazon
 
 app = Flask(__name__)
-
-async def search_and_compare(category_keyword, filter_keyword, limit, profit_margin):
-    """
-    TSUKUMOで検索し、結果をAmazon価格と比較し、利益率でフィルタリングする非同期関数
-    """
-    tsukumo_results = await scrape_tsukumo(category_keyword, filter_keyword, limit)
-    
-    if not tsukumo_results:
-        return []
-
-    target_items = tsukumo_results
-    
-    tasks = []
-    for item in target_items:
-        tasks.append(scrape_amazon(item['name']))
-    
-    amazon_results = await asyncio.gather(*tasks)
-
-    filtered_results = []
-    for i, item in enumerate(target_items):
-        amazon_result = amazon_results[i]
-        if amazon_result:
-            item['amazon_price'] = amazon_result.get('price')
-            item['amazon_url'] = amazon_result.get('url')
-        else:
-            item['amazon_price'] = None
-            item['amazon_url'] = f"https://www.amazon.co.jp/s?k={urllib.parse.quote(item['name'])}"
-
-        # TSUKUMOとAmazonの両方で価格が取得できた場合のみ、利益率を計算
-        if item.get('amazon_price') is not None and item.get('price') is not None and item.get('price') > 0:
-            profit = item['amazon_price'] - item['price']
-            margin = (profit / item['price']) * 100
-            
-            item['price_difference'] = profit
-            item['profit_margin'] = margin  # 利益率をitemに追加
-            
-            if margin >= profit_margin:
-                filtered_results.append(item)
-        else:
-            item['price_difference'] = None
-            item['profit_margin'] = None # 計算できない場合もキーを追加
-
-    return filtered_results
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -62,10 +18,39 @@ def index():
             profit_margin = 15
         
         if category_keyword:
-            results = asyncio.run(search_and_compare(category_keyword, filter_keyword, limit, profit_margin))
+            # 最もシンプルな形で、直接関数を呼び出す
+            print("--- 検索処理を開始します ---")
+            kakaku_results = scrape_kakaku_com(category_keyword, filter_keyword, limit)
+            
+            final_results = []
+            if kakaku_results:
+                print(f"--- 価格.comから {len(kakaku_results)} 件取得。Amazonでの検索を開始します ---")
+                for item in kakaku_results:
+                    amazon_result = scrape_amazon(item['name'])
+                    if amazon_result:
+                        item['amazon_price'] = amazon_result.get('price')
+                        item['amazon_url'] = amazon_result.get('url')
+                    else:
+                        item['amazon_price'] = None
+                        item['amazon_url'] = f"https://www.amazon.co.jp/s?k={urllib.parse.quote(item['name'])}"
+
+                    if item.get('amazon_price') and item.get('price') and item.get('price') > 0:
+                        profit = item['amazon_price'] - item['price']
+                        margin = (profit / item['price']) * 100
+                        
+                        item['price_difference'] = profit
+                        item['profit_margin'] = margin
+                        
+                        if margin >= profit_margin:
+                            final_results.append(item)
+                    else:
+                        item['price_difference'] = None
+                        item['profit_margin'] = None
+            
+            print(f"--- 全ての処理が完了しました。{len(final_results)} 件の結果を返します ---")
             return render_template(
                 'index.html', 
-                results=results, 
+                results=final_results, 
                 category_name=category_keyword, 
                 filter_keyword=filter_keyword,
                 limit=limit,
@@ -82,4 +67,4 @@ def index():
     )
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+    app.run(host='0.0.0.0', port=5000, debug=False)
