@@ -4,7 +4,25 @@
     <meta charset="UTF-8">
     <title>価格比較ツール - 価格.com vs Amazon</title>
     <style>
-        /* (スタイルは変更なし) */
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 16px; color: #333; background-color: #f4f4f9; }
+        .container { max-width: 1200px; margin: 30px auto; padding: 20px 30px; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { font-size: 28px; color: #0056b3; border-bottom: 3px solid #0056b3; padding-bottom: 15px; margin-top: 0; }
+        .search-form { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 30px; align-items: center; padding: 20px; background-color: #f8f9fa; border-radius: 8px; }
+        select, input[type="text"], input[type="number"] { padding: 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; }
+        .form-group { display: flex; flex-direction: column; gap: 5px; }
+        label { font-weight: bold; font-size: 14px; color: #555; }
+        button { background-color: #007bff; color: white; padding: 12px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; transition: background-color 0.3s; align-self: flex-end; }
+        button:hover { background-color: #0056b3; }
+        h2 { font-size: 22px; color: #333; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .results-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .results-table th, .results-table td { padding: 12px 15px; border: 1px solid #ddd; text-align: left; vertical-align: middle; }
+        .results-table th { background-color: #f8f9fa; font-weight: bold; }
+        .results-table tr:nth-child(even) { background-color: #f2f2f2; }
+        .results-table a { color: #0056b3; text-decoration: none; }
+        .results-table a:hover { text-decoration: underline; }
+        .no-results { color: #777; font-style: italic; }
+        .price-plus { color: #28a745; font-weight: bold; }
+        .price-minus { color: #dc3545; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -12,47 +30,140 @@
         <h1>カテゴリ別 価格比較ツール <small>(価格.com vs Amazon)</small></h1>
         
         <form id="searchForm" action="/" method="post" class="search-form">
-            <select name="category_keyword" id="category_select" style="flex-grow: 1;" required>
-                <option value="">調査するカテゴリを選択</option>
-                <optgroup label="PCパーツ">
-                    <option value="CPU" {% if category_name == 'CPU' %}selected{% endif %}>CPU</option>
-                    <option value="CPUクーラー" {% if category_name == 'CPUクーラー' %}selected{% endif %}>CPUクーラー</option>
-                    <option value="メモリ" {% if category_name == 'メモリ' %}selected{% endif %}>メモリ</option>
-                    <option value="マザーボード" {% if category_name == 'マザーボード' %}selected{% endif %}>マザーボード</option>
-                    <option value="グラフィックボード" {% if category_name == 'グラフィックボード' %}selected{% endif %}>グラフィックボード</option>
-                    <option value="SSD" {% if category_name == 'SSD' %}selected{% endif %}>SSD</option>
-                    <option value="ハードディスク・HDD(3.5インチ)" {% if category_name == 'ハードディスク・HDD(3.5インチ)' %}selected{% endif %}>ハードディスク・HDD(3.5インチ)</option>
-                    <option value="ハードディスク・HDD(2.5インチ)" {% if category_name == 'ハードディスク・HDD(2.5インチ)' %}selected{% endif %}>ハードディスク・HDD(2.5インチ)</option>
-                    <option value="PCケース" {% if category_name == 'PCケース' %}selected{% endif %}>PCケース</option>
-                    <option value="電源ユニット" {% if category_name == '電源ユニット' %}selected{% endif %}>電源ユニット</option>
-                    <option value="サウンドカード" {% if category_name == 'サウンドカード' %}selected{% endif %}>サウンドカード</option>
-                    <option value="ケースファン" {% if category_name == 'ケースファン' %}selected{% endif %}>ケースファン</option>
-                    <option value="ファンコントローラー" {% if category_name == 'ファンコントローラー' %}selected{% endif %}>ファンコントローラー</option>
-                    <option value="インターフェイスカード" {% if category_name == 'インターフェイスカード' %}selected{% endif %}>インターフェイスカード</option>
-                    <option value="キャプチャーボード" {% if category_name == 'キャプチャーボード' %}selected{% endif %}>キャプチャーボード</option>
-                    <option value="ハードディスク ケース" {% if category_name == 'ハードディスク ケース' %}selected{% endif %}>ハードディスク ケース</option>
-                    <option value="リムーバブルケース" {% if category_name == 'リムーバブルケース' %}selected{% endif %}>リムーバブルケース</option>
-                    <option value="DVDドライブ" {% if category_name == 'DVDドライブ' %}selected{% endif %}>DVDドライブ</option>
-                    <option value="ブルーレイドライブ" {% if category_name == 'ブルーレイドライブ' %}selected{% endif %}>ブルーレイドライブ</option>
-                </optgroup>
-                <optgroup label="PC周辺機器">
-                    <option value="液晶モニター" {% if category_name == '液晶モニター' %}selected{% endif %}>液晶モニター</option>
-                    <option value="キーボード" {% if category_name == 'キーボード' %}selected{% endif %}>キーボード</option>
-                    <option value="マウス" {% if category_name == 'マウス' %}selected{% endif %}>マウス</option>
-                    <option value="NAS(ネットワークHDD)" {% if category_name == 'NAS(ネットワークHDD)' %}selected{% endif %}>NAS(ネットワークHDD)</option>
-                    <option value="無線LANルーター(Wi-Fiルーター)" {% if category_name == '無線LANルーター(Wi-Fiルーター)' %}selected{% endif %}>無線LANルーター(Wi-Fiルーター)</option>
-                </optgroup>
-            </select>
             
-            <!-- (これ以降のフォーム要素は、最後に成功したバージョンなので変更なし) -->
-            <!-- ... -->
+            <div class="form-group">
+                <label for="category_select">カテゴリ</label>
+                <select name="category_keyword" id="category_select" required>
+                    <option value="">選択してください</option>
+                    <optgroup label="PCパーツ">
+                        {% for category in pc_parts_categories %}
+                            <option value="{{ category }}" {% if category_name == category %}selected{% endif %}>{{ category }}</option>
+                        {% endfor %}
+                    </optgroup>
+                    <optgroup label="PC周辺機器">
+                        {% for category in peripherals_categories %}
+                            <option value="{{ category }}" {% if category_name == category %}selected{% endif %}>{{ category }}</option>
+                        {% endfor %}
+                    </optgroup>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="maker_select">メーカー</label>
+                <select name="maker" id="maker_select">
+                    <option value="">すべて</option>
+                    {% if makers %}
+                        {% for maker in makers %}
+                            <option value="{{ maker }}" {% if selected_maker == maker %}selected{% endif %}>{{ maker }}</option>
+                        {% endfor %}
+                    {% endif %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="filter_keyword">絞り込みキーワード</label>
+                <input type="text" id="filter_keyword" name="filter_keyword" placeholder="(任意)" value="{{ filter_keyword or '' }}">
+            </div>
+
+            <div class="form-group">
+                <label for="limit">調査件数</label>
+                <input type="number" id="limit" name="limit" min="1" max="50" value="{{ limit or 5 }}">
+            </div>
+
+            <div class="form-group">
+                <label for="profit_margin">利益率(%)</label>
+                <input type="number" id="profit_margin" name="profit_margin" min="0" value="{{ profit_margin or 15 }}">
+            </div>
+
+            <div class="form-group">
+                <label for="sort">並び順</label>
+                <select name="sort" id="sort">
+                    <option value="price_asc" {% if selected_sort == 'price_asc' %}selected{% endif %}>価格の安い順</option>
+                    <option value="saledate_desc" {% if selected_sort == 'saledate_desc' %}selected{% endif %}>発売日の新しい順</option>
+                    <option value="ranking_asc" {% if selected_sort == 'ranking_asc' %}selected{% endif %}>売れ筋ランキング順</option>
+                </select>
+            </div>
+            
+            <button type="submit">比較開始</button>
         </form>
 
-        <!-- (検索結果の表示部分は変更なし) -->
+        {% if category_name %}
+            <h2>「{{ category_name }}{% if filter_keyword %} × {{ filter_keyword }}{% endif %}」の比較結果 (上位{{ limit }}件)</h2>
+        {% else %}
+            <h2>比較結果</h2>
+        {% endif %}
+        
+        <div id="result-area">
+            {% if results %}
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 45%;">商品名</th>
+                            <th>価格.com価格 (円)</th>
+                            <th>Amazon価格 (円)</th>
+                            <th>価格差 (円)</th>
+                            <th>利益率 (%)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in results %}
+                        <tr>
+                            <td><a href="{{ item.url }}" target="_blank" title="{{ item.name }}">{{ item.name }}</a></td>
+                            <td><a href="{{ item.url }}" target="_blank">{{ "{:,.0f}".format(item.price) if item.price is not none else 'N/A' }}</a></td>
+                            <td><a href="{{ item.amazon_url }}" target="_blank">{{ "{:,.0f}".format(item.amazon_price) if item.amazon_price is not none else 'N/A' }}</a></td>
+                            <td>
+                                {% if item.price_difference is not none %}
+                                    <span class="{{ 'price-plus' if item.price_difference > 0 else 'price-minus' }}">
+                                        {{ "{:+,}".format(item.price_difference) }}
+                                    </span>
+                                {% else %}
+                                    N/A
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if item.profit_margin is not none %}
+                                    <span class="{{ 'price-plus' if item.profit_margin > 0 else 'price-minus' }}">
+                                        {{ "%.1f" | format(item.profit_margin) }}%
+                                    </span>
+                                {% else %}
+                                    N/A
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% elif request.method == 'POST' %}
+                <p class="no-results">「{{ category_name }}{% if filter_keyword %}{{ ' × ' + filter_keyword }}{% endif %}」に該当する商品は見つかりませんでした。</p>
+            {% else %}
+                <p class="no-results">調査したいカテゴリを選択して、「比較開始」ボタンを押してください。</p>
+            {% endif %}
+        </div>
     </div>
 
     <script>
-        // (JavaScriptも、最後に成功したバージョンなので変更なし)
+        document.getElementById('category_select').addEventListener('change', function() {
+            const category = this.value;
+            const makerSelect = document.getElementById('maker_select');
+            
+            makerSelect.innerHTML = '<option value="">メーカーを読み込み中...</option>';
+
+            if (category) {
+                fetch('/get_makers_for_category?category=' + encodeURIComponent(category))
+                    .then(response => response.json())
+                    .then(makers => {
+                        makerSelect.innerHTML = '<option value="">すべて</option>';
+                        makers.forEach(function(maker) {
+                            const option = document.createElement('option');
+                            option.value = maker;
+                            option.textContent = maker;
+                            makerSelect.appendChild(option);
+                        });
+                    });
+            } else {
+                makerSelect.innerHTML = '<option value="">すべて</option>';
+            }
+        });
     </script>
 </body>
 </html>
