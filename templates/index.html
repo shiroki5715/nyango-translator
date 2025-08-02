@@ -52,11 +52,38 @@
                 <label for="maker_select">メーカー</label>
                 <select name="maker" id="maker_select">
                     <option value="">すべて</option>
-                    {% if makers %}
-                        {% for maker in makers %}
-                            <option value="{{ maker }}" {% if selected_maker == maker %}selected{% endif %}>{{ maker }}</option>
-                        {% endfor %}
-                    {% endif %}
+                    <optgroup label="CPU">
+                        <option value="Intel">Intel</option>
+                        <option value="AMD">AMD</option>
+                    </optgroup>
+                    <optgroup label="マザーボード/グラフィックボード">
+                        <option value="ASUS">ASUS</option>
+                        <option value="MSI">MSI</option>
+                        <option value="GIGABYTE">GIGABYTE</option>
+                        <option value="ASRock">ASRock</option>
+                        <option value="Palit">Palit</option>
+                        <option value="ZOTAC">ZOTAC</option>
+                        <option value="INNO3D">INNO3D</option>
+                    </optgroup>
+                    <optgroup label="メモリ">
+                        <option value="Crucial">Crucial</option>
+                        <option value="CORSAIR">CORSAIR</option>
+                        <option value="G.Skill">G.Skill</option>
+                        <option value="Team">Team</option>
+                    </optgroup>
+                    <optgroup label="ストレージ (SSD/HDD)">
+                        <option value="SAMSUNG">SAMSUNG</option>
+                        <option value="Western Digital">Western Digital</option>
+                        <option value="SEAGATE">SEAGATE</option>
+                        <option value="KIOXIA">KIOXIA</option>
+                        <option value="Solidigm">Solidigm</option>
+                    </optgroup>
+                    <optgroup label="その他">
+                        <option value="Logicool">Logicool</option>
+                        <option value="ELECOM">ELECOM</option>
+                        <option value="BUFFALO">BUFFALO</option>
+                        <option value="I-O DATA">I-O DATA</option>
+                    </optgroup>
                 </select>
             </div>
 
@@ -141,29 +168,5 @@
         </div>
     </div>
 
-    <script>
-        document.getElementById('category_select').addEventListener('change', function() {
-            const category = this.value;
-            const makerSelect = document.getElementById('maker_select');
-            
-            makerSelect.innerHTML = '<option value="">メーカーを読み込み中...</option>';
-
-            if (category) {
-                fetch('/get_makers_for_category?category=' + encodeURIComponent(category))
-                    .then(response => response.json())
-                    .then(makers => {
-                        makerSelect.innerHTML = '<option value="">すべて</option>';
-                        makers.forEach(function(maker) {
-                            const option = document.createElement('option');
-                            option.value = maker;
-                            option.textContent = maker;
-                            makerSelect.appendChild(option);
-                        });
-                    });
-            } else {
-                makerSelect.innerHTML = '<option value="">すべて</option>';
-            }
-        });
-    </script>
 </body>
 </html>

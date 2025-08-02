@@ -35,13 +35,13 @@ CATEGORY_URL_MAP = {
     "無線LANルーター(Wi-Fiルーター)": "https://kakaku.com/specsearch/0077/",
 }
 
-def scrape_kakaku_com(category_name: str, filter_keyword: str = None, limit: int = 0, maker: str = None, sort: str = None, get_makers_only: bool = False):
+def scrape_kakaku_com(category_name: str, filter_keyword: str = None, limit: int = 0, maker: str = None, sort: str = None):
     log = logging.getLogger(__name__)
     spec_search_url = CATEGORY_URL_MAP.get(category_name)
     if not spec_search_url:
         return [], []
 
-    log.info(f"価格.com処理開始: カテゴリ='{category_name}', メーカーリスト取得={get_makers_only}")
+    log.info(f"価格.com処理開始: カテゴリ='{category_name}'")
     
     driver = None
     try:
@@ -52,13 +52,6 @@ def scrape_kakaku_com(category_name: str, filter_keyword: str = None, limit: int
         
         driver.get(spec_search_url)
         
-        if get_makers_only:
-            maker_select_element = wait.until(EC.presence_of_element_located((By.NAME, "LstMaker")))
-            select = Select(maker_select_element)
-            makers = [option.text for option in select.options if option.get_attribute("value")]
-            log.info(f"  -> {category_name} のメーカーを {len(makers)} 件取得しました。")
-            return [], makers
-
         if maker:
             maker_select = Select(wait.until(EC.element_to_be_clickable((By.NAME, "LstMaker"))))
             maker_select.select_by_visible_text(maker)
