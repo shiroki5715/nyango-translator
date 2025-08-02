@@ -102,6 +102,36 @@ def scrape_kakaku_com(category_name: str, filter_keyword: str = None, limit: int
         if driver:
             driver.quit()
 
+def get_makers_for_category(category_name: str):
+    log = logging.getLogger(__name__)
+    spec_search_url = CATEGORY_URL_MAP.get(category_name)
+    if not spec_search_url:
+        return []
+
+    log.info(f"メーカーリスト取得開始: カテゴリ='{category_name}'")
+    driver = None
+    try:
+        options = uc.ChromeOptions()
+        options.add_argument('--headless')
+        driver = uc.Chrome(options=options)
+        wait = WebDriverWait(driver, 20)
+        
+        driver.get(spec_search_url)
+        
+        maker_select_element = wait.until(EC.presence_of_element_located((By.NAME, "LstMaker")))
+        select = Select(maker_select_element)
+        makers = [option.text for option in select.options if option.get_attribute("value")]
+        log.info(f"  -> {category_name} のメーカーを {len(makers)} 件取得しました。")
+        return makers
+
+    except Exception as e:
+        log.error(f"メーカーリスト取得でエラーが発生: {e}", exc_info=True)
+        return []
+    finally:
+        if driver:
+            driver.quit()
+
+
 def scrape_amazon(product_name: str):
     log = logging.getLogger(__name__)
     log.info(f"  Amazon検索: {product_name[:30]}...")
