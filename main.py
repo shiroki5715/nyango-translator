@@ -1,7 +1,8 @@
 import sys
 import time
 import urllib.parse
-import undetected_chromedriver as uc
+import selenium.webdriver as webdriver
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.support import expected_conditions as EC
@@ -45,9 +46,13 @@ def scrape_kakaku_com(category_name: str, filter_keyword: str = None, limit: int
     
     driver = None
     try:
-        options = uc.ChromeOptions()
+        options = webdriver.ChromeOptions()
         options.add_argument('--headless')
-        driver = uc.Chrome(options=options)
+        options.add_argument('--no-sandbox')
+        options.add_argument('--disable-dev-shm-usage')
+        options.add_argument('--disable-gpu')
+        options.add_argument('--window-size=1920x1080')
+        driver = webdriver.Chrome(options=options)
         wait = WebDriverWait(driver, 20)
         
         driver.get(spec_search_url)
@@ -102,6 +107,8 @@ def scrape_kakaku_com(category_name: str, filter_keyword: str = None, limit: int
         if driver:
             driver.quit()
 
+import requests
+
 def get_makers_for_category(category_name: str):
     log = logging.getLogger(__name__)
     spec_search_url = CATEGORY_URL_MAP.get(category_name)
@@ -109,27 +116,30 @@ def get_makers_for_category(category_name: str):
         return []
 
     log.info(f"メーカーリスト取得開始: カテゴリ='{category_name}'")
-    driver = None
     try:
-        options = uc.ChromeOptions()
-        options.add_argument('--headless')
-        driver = uc.Chrome(options=options)
-        wait = WebDriverWait(driver, 20)
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36'
+        }
+        response = requests.get(spec_search_url, headers=headers, timeout=30)
+        response.raise_for_status()
         
-        driver.get(spec_search_url)
+        soup = BeautifulSoup(response.content, 'lxml')
         
-        maker_select_element = wait.until(EC.presence_of_element_located((By.NAME, "LstMaker")))
-        select = Select(maker_select_element)
-        makers = [option.text for option in select.options if option.get_attribute("value")]
+        maker_select_element = soup.find("select", {"name": "LstMaker"})
+        if not maker_select_element:
+            log.warning(f"  -> {category_name} のメーカー選択リストが見つかりませんでした。")
+            return []
+
+        makers = [option.get_text(strip=True) for option in maker_select_element.find_all("option") if option.get("value")]
         log.info(f"  -> {category_name} のメーカーを {len(makers)} 件取得しました。")
         return makers
 
-    except Exception as e:
-        log.error(f"メーカーリスト取得でエラーが発生: {e}", exc_info=True)
+    except requests.exceptions.RequestException as e:
+        log.error(f"メーカーリスト取得でHTTPエラーが発生: {e}", exc_info=True)
         return []
-    finally:
-        if driver:
-            driver.quit()
+    except Exception as e:
+        log.error(f"メーカーリスト取得で予期せぬエラーが発生: {e}", exc_info=True)
+        return []
 
 
 def scrape_amazon(product_name: str):
@@ -138,9 +148,13 @@ def scrape_amazon(product_name: str):
     driver = None
     for attempt in range(2):
         try:
-            options = uc.ChromeOptions()
+            options = webdriver.ChromeOptions()
             options.add_argument('--headless')
-            driver = uc.Chrome(options=options)
+            options.add_argument('--no-sandbox')
+            options.add_argument('--disable-dev-shm-usage')
+            options.add_argument('--disable-gpu')
+            options.add_argument('--window-size=1920x1080')
+            driver = webdriver.Chrome(options=options)
             search_url = f"https://www.amazon.co.jp/s?k={urllib.parse.quote(product_name)}"
             driver.get(search_url)
             wait = WebDriverWait(driver, 10)
@@ -168,3 +182,4 @@ def scrape_amazon(product_name: str):
                 driver.quit()
     log.error(f"  -> Amazon検索失敗: {product_name[:30]}...")
     return None
+

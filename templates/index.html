@@ -54,8 +54,7 @@
             <div class="form-group">
                 <label>メーカー (複数選択可)</label>
                 <div class="maker-group">
-                    {% set motherboard_makers = ['ASRock', 'ASUS', 'BIOSTAR', 'Colorful', 'GIGABYTE', 'MSI', 'NZXT', 'SUPERMICRO', 'ZOTAC', '玄人志向'] %}
-                    {% for maker in motherboard_makers %}
+                    {% for maker in all_makers %}
                         <label>
                             <input type="checkbox" name="makers" value="{{ maker }}" {% if maker in selected_makers %}checked{% endif %}>
                             {{ maker }}
