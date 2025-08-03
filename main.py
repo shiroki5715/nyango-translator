@@ -10,6 +10,7 @@ from bs4 import BeautifulSoup
 import logging
 
 CATEGORY_URL_MAP = {
+    # --- PCパーツ ---
     "CPU": "https://kakaku.com/specsearch/0510/",
     "CPUクーラー": "https://kakaku.com/specsearch/0512/",
     "メモリ": "https://kakaku.com/specsearch/0520/",
@@ -18,20 +19,24 @@ CATEGORY_URL_MAP = {
     "SSD": "https://kakaku.com/specsearch/0537/",
     "ハードディスク・HDD(3.5インチ)": "https://kakaku.com/specsearch/0530/",
     "ハードディスク・HDD(2.5インチ)": "https://kakaku.com/specsearch/0535/",
+    "ハードディスク・HDD(SCSI)": "https://kakaku.com/specsearch/0536/",
     "PCケース": "https://kakaku.com/specsearch/0580/",
     "電源ユニット": "https://kakaku.com/specsearch/0590/",
     "サウンドカード": "https://kakaku.com/specsearch/0560/",
     "ケースファン": "https://kakaku.com/specsearch/0581/",
-    "ファンコントローラー": "https://kakaku.com/specsearch/0582/",
-    "インターフェイスカード": "https://kakaku.com/specsearch/0565/",
     "キャプチャーボード": "https://kakaku.com/specsearch/0568/",
-    "ハードディスク ケース": "https://kakaku.com/specsearch/0539/",
-    "リムーバブルケース": "https://kakaku.com/specsearch/0543/",
     "DVDドライブ": "https://kakaku.com/specsearch/0125/",
     "ブルーレイドライブ": "https://kakaku.com/specsearch/0126/",
-    "液晶モニター": "https://kakaku.com/specsearch/0085/",
-    "キーボード": "https://kakaku.com/specsearch/0150/",
+    # --- 周辺機器 ---
+    "PCモニター・液晶ディスプレイ": "https://kakaku.com/specsearch/0085/",
+    "VRゴーグル・VRヘッドセット": "https://kakaku.com/specsearch/0576/",
+    "モニターアーム": "https://kakaku.com/specsearch/0086/",
+    "プリンタ": "https://kakaku.com/specsearch/0060/",
+    "スキャナ": "https://kakaku.com/specsearch/0070/",
     "マウス": "https://kakaku.com/specsearch/0160/",
+    "キーボード": "https://kakaku.com/specsearch/0150/",
+    "テンキー": "https://kakaku.com/specsearch/0153/",
+    "WEBカメラ": "https://kakaku.com/specsearch/0567/",
     "NAS(ネットワークHDD)": "https://kakaku.com/specsearch/0538/",
     "無線LANルーター(Wi-Fiルーター)": "https://kakaku.com/specsearch/0077/",
 }
@@ -109,6 +114,19 @@ def scrape_kakaku_com(category_name: str, filter_keyword: str = None, limit: int
 
 import requests
 
+# --- 除外メーカーリスト ---
+EXCLUDED_MAKERS = {
+    "A2ZEON", "ADTEC", "AEXEA", "AFOX", "Antec Memory", "Apacer", "ATP", 
+    "AVANTIUM", "AVEXIR", "CELL SHOCK", "CENTURY MICRO", "CIMA LABORATORY", 
+    "Elixir", "ESSENCORE", "GoldKey", "HI-DISC", "I'M Intelligent Memory", 
+    "ITC", "J&A Information", "Mach Xtreme Technology", "Mushkin Enhanced", 
+    "OCMEMORY", "OCZ", "Patriot Memory", "PQI", "RAMMAX Technology", 
+    "SITAKINGS", "SK hynix", "SPD", "SUPER TALENT", "Thermaltake", "UMeX", 
+    "Walton Chaintech", "Winchip", "WINTEN", "エルピーダメモリ", "ゲイル", 
+    "コンテック", "スイスビット", "ドスパラ", "ノーブランド", "ハギワラシスコム", 
+    "ヤダイ", "リーダーメディアテクノ", "挑戦者", "VIA"
+}
+
 def get_makers_for_category(category_name: str):
     log = logging.getLogger(__name__)
     spec_search_url = CATEGORY_URL_MAP.get(category_name)
@@ -130,7 +148,11 @@ def get_makers_for_category(category_name: str):
             log.warning(f"  -> {category_name} のメーカー選択リストが見つかりませんでした。")
             return []
 
-        makers = [option.get_text(strip=True) for option in maker_select_element.find_all("option") if option.get("value") and option.get_text(strip=True) != 'VIA']
+        makers = [
+            option.get_text(strip=True) 
+            for option in maker_select_element.find_all("option") 
+            if option.get("value") and option.get_text(strip=True) not in EXCLUDED_MAKERS
+        ]
         log.info(f"  -> {category_name} のメーカーを {len(makers)} 件取得しました。")
         return makers
 

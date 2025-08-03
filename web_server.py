@@ -1,27 +1,45 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, session, redirect, url_for
 import urllib.parse
 from main import scrape_kakaku_com, scrape_amazon, CATEGORY_URL_MAP, get_makers_for_category
 import logging
 import threading
 import json
+import re
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(threadName)s: %(message)s')
 
 app = Flask(__name__)
 app.config['TEMPLATES_AUTO_RELOAD'] = True
+app.secret_key = 'your_very_secret_key_for_development'  # セッション管理のための秘密鍵
 
 # --- カテゴリ定義 ---
 PC_PARTS_CATEGORIES = [
-    "CPU", "メモリ", "マザーボード", "グラフィックボード", 
-    "SSD", "PCケース", "電源ユニット", "CPUクーラー"
+    "CPU", "メモリ", "マザーボード", "グラフィックボード", "SSD", 
+    "ハードディスク・HDD(3.5インチ)", "ハードディスク・HDD(2.5インチ)", "ハードディスク・HDD(SCSI)",
+    "PCケース", "電源ユニット", "CPUクーラー", "サウンドカード", "ケースファン", 
+    "キャプチャーボード", "DVDドライブ", "ブルーレイドライブ"
 ]
-ALL_CATEGORIES = list(CATEGORY_URL_MAP.keys())
+PERIPHERALS_CATEGORIES = [
+    "PCモニター・液晶ディスプレイ", "VRゴーグル・VRヘッドセット", "モニターアーム",
+    "プリンタ", "スキャナ", "マウス", "キーボード", "テンキー", "WEBカメラ",
+    "NAS(ネットワークHDD)", "無線LANルーター(Wi-Fiルーター)"
+]
+# メーカーリストを事前取得する対象カテゴリ
+PRELOAD_CATEGORIES = PC_PARTS_CATEGORIES + PERIPHERALS_CATEGORIES
 
 # --- メーカーリストのキャッシュ ---
 MAKER_LIST_CACHE = {}
 
-# 周辺機器カテゴリを再定義
-PERIPHERALS_CATEGORIES = [cat for cat in CATEGORY_URL_MAP.keys() if cat not in PC_PARTS_CATEGORIES]
+def preload_maker_lists():
+    """主要カテゴリのメーカーリストをバックグラウンドで事前に読み込む"""
+    logging.info("メーカーリストの事前読み込みを開始...")
+    for category in PRELOAD_CATEGORIES:
+        if category not in MAKER_LIST_CACHE:
+            makers = get_makers_for_category(category)
+            if makers:
+                MAKER_LIST_CACHE[category] = makers
+    logging.info("メーカーリストの事前読み込みが完了。")
+
 
 
 def search_and_compare_for_maker(category_keyword, filter_keyword, limit, profit_margin, maker, sort):
@@ -33,8 +51,26 @@ def search_and_compare_for_maker(category_keyword, filter_keyword, limit, profit
         logging.info(f"  -> メーカー '{maker}' の製品は見つかりませんでした。")
         return []
 
-    maker_results = []
+    # --- 重複排除ロジック ---
+    logging.info(f"  -> 取得した {len(kakaku_results)} 件の製品から重複を排除します...")
+    unique_products = {}
     for item in kakaku_results:
+        # 製品名からメーカー名 [〇〇] や【〇〇】を削除
+        base_name = re.sub(r'[\[【].*?[\]】]', '', item['name']).strip()
+        # 製品名をスペースで分割し、最初の3要素をキーとする（製品シリーズを特定するため）
+        product_key = ' '.join(base_name.split()[:3])
+
+        # 辞書にキーが存在しないか、存在しても現在の価格の方が安い場合は登録/更新
+        if product_key not in unique_products or item['price'] < unique_products[product_key]['price']:
+            unique_products[product_key] = item
+    
+    # 重複排除後のリスト
+    deduplicated_results = list(unique_products.values())
+    logging.info(f"  -> 重複排除後、{len(deduplicated_results)} 件の製品が残りました。")
+    # --- 重複排除ロジックここまで ---
+
+    maker_results = []
+    for item in deduplicated_results:
         amazon_result = scrape_amazon(item['name'])
         if amazon_result:
             item['amazon_price'] = amazon_result.get('price')
@@ -56,15 +92,11 @@ def search_and_compare_for_maker(category_keyword, filter_keyword, limit, profit
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    results = []
-    category_name = ''
-    filter_keyword = ''
-    limit = 3
-    profit_margin = 15
-    selected_makers = []
-    selected_sort = 'price_asc'
-    
     if request.method == 'POST':
+        # フォームデータをセッションに保存
+        session['form_data'] = request.form
+        
+        # 検索処理
         category_name = request.form.get('category_keyword', '')
         filter_keyword = request.form.get('filter_keyword', '')
         limit = int(request.form.get('limit', 3))
@@ -72,6 +104,7 @@ def index():
         selected_makers = request.form.getlist('makers')
         selected_sort = request.form.get('sort', 'price_asc')
         
+        results = []
         if category_name and selected_makers:
             logging.info(f"検索リクエスト受信: カテゴリ='{category_name}', メーカー='{selected_makers}', 1メーカーあたりの上限='{limit}'")
             all_results = []
@@ -79,7 +112,27 @@ def index():
                 maker_results = search_and_compare_for_maker(category_name, filter_keyword, limit, profit_margin, maker, selected_sort)
                 all_results.extend(maker_results)
             results = sorted(all_results, key=lambda x: x.get('profit_margin', 0), reverse=True)
+        
+        # 検索結果をセッションに保存
+        session['results'] = results
+        
+        # PRGパターン: POST後にリダイレクト
+        return redirect(url_for('index'))
+
+    # GETリクエストの処理
+    # セッションからデータを取得（なければデフォルト値）
+    form_data = session.pop('form_data', {})
+    results = session.pop('results', [])
     
+    # テンプレートに渡す変数を設定
+    category_name = form_data.get('category_keyword', '')
+    filter_keyword = form_data.get('filter_keyword', '')
+    limit = int(form_data.get('limit', 3))
+    profit_margin = int(form_data.get('profit_margin', 15))
+    # getlistに相当する処理
+    selected_makers = form_data.getlist('makers') if hasattr(form_data, 'getlist') else form_data.get('makers', [])
+    selected_sort = form_data.get('sort', 'price_asc')
+
     makers_by_category_json = json.dumps(MAKER_LIST_CACHE)
 
     return render_template(
@@ -92,7 +145,7 @@ def index():
         selected_makers=selected_makers,
         selected_sort=selected_sort,
         pc_parts_categories=PC_PARTS_CATEGORIES,
-        peripherals_categories=PERIPHERALS_CATEGORIES, # 変更
+        peripherals_categories=PERIPHERALS_CATEGORIES,
         makers_by_category_json=makers_by_category_json
     )
 
