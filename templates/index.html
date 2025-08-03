@@ -53,13 +53,8 @@
 
             <div class="form-group">
                 <label>メーカー (複数選択可)</label>
-                <div class="maker-group">
-                    {% for maker in all_makers %}
-                        <label>
-                            <input type="checkbox" name="makers" value="{{ maker }}" {% if maker in selected_makers %}checked{% endif %}>
-                            {{ maker }}
-                        </label>
-                    {% endfor %}
+                <div class="maker-group" id="maker-group-container">
+                    <!-- JavaScriptによってメーカーがここに表示されます -->
                 </div>
             </div>
 
@@ -144,5 +139,51 @@
         </div>
     </div>
 
+        <script>
+        // サーバーから渡されたデータをJavaScriptの変数として受け取る
+        const makersData = {{ makers_by_category_json | safe }};
+        const initialSelectedMakers = {{ selected_makers | tojson }};
+
+        // 必要なHTML要素を取得
+        const categorySelect = document.getElementById('category_select');
+        const makerContainer = document.getElementById('maker-group-container');
+
+        // メーカーのチェックボックスを更新する関数
+        function renderMakers() {
+            const selectedCategory = categorySelect.value;
+            const makers = makersData[selectedCategory] || [];
+
+            // コンテナを空にする
+            makerContainer.innerHTML = '';
+
+            // 表示すべきメーカーがない場合はメッセージを表示
+            if (makers.length === 0 && selectedCategory) {
+                makerContainer.innerHTML = '<p style="font-size: 14px; color: #888;">このカテゴリのメーカーはありません。</p>';
+                return;
+            }
+
+            // メーカーリストに基づいてチェックボックスを作成
+            makers.forEach(maker => {
+                const isChecked = initialSelectedMakers.includes(maker);
+                const label = document.createElement('label');
+                const checkbox = document.createElement('input');
+                
+                checkbox.type = 'checkbox';
+                checkbox.name = 'makers';
+                checkbox.value = maker;
+                checkbox.checked = isChecked;
+                
+                label.appendChild(checkbox);
+                label.appendChild(document.createTextNode(' ' + maker));
+                makerContainer.appendChild(label);
+            });
+        }
+
+        // イベントリスナーを設定
+        // カテゴリが変更されたら、メーカー表示を更新
+        categorySelect.addEventListener('change', renderMakers);
+        // ページの読み込みが完了したら、初期状態のメーカー表示を実行
+        document.addEventListener('DOMContentLoaded', renderMakers);
+    </script>
 </body>
 </html>

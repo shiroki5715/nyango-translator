@@ -130,7 +130,7 @@ def get_makers_for_category(category_name: str):
             log.warning(f"  -> {category_name} のメーカー選択リストが見つかりませんでした。")
             return []
 
-        makers = [option.get_text(strip=True) for option in maker_select_element.find_all("option") if option.get("value")]
+        makers = [option.get_text(strip=True) for option in maker_select_element.find_all("option") if option.get("value") and option.get_text(strip=True) != 'VIA']
         log.info(f"  -> {category_name} のメーカーを {len(makers)} 件取得しました。")
         return makers
 
