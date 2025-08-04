@@ -5,6 +5,8 @@ import logging
 import threading
 import json
 import re
+import concurrent.futures
+
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(threadName)s: %(message)s')
 
@@ -108,9 +110,23 @@ def index():
         if category_name and selected_makers:
             logging.info(f"検索リクエスト受信: カテゴリ='{category_name}', メーカー='{selected_makers}', 1メーカーあたりの上限='{limit}'")
             all_results = []
-            for maker in selected_makers:
-                maker_results = search_and_compare_for_maker(category_name, filter_keyword, limit, profit_margin, maker, selected_sort)
-                all_results.extend(maker_results)
+            # --- 並列処理による高速化 ---
+            # 同時に実行する最大スレッド数を5に制限
+            with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+                # 各メーカーに対する検索タスクを作成
+                future_to_maker = {
+                    executor.submit(search_and_compare_for_maker, category_name, filter_keyword, limit, profit_margin, maker, selected_sort): maker 
+                    for maker in selected_makers
+                }
+                # 完了したタスクから結果を取得
+                for future in concurrent.futures.as_completed(future_to_maker):
+                    maker = future_to_maker[future]
+                    try:
+                        maker_results = future.result()
+                        all_results.extend(maker_results)
+                    except Exception as exc:
+                        logging.error(f"メーカー '{maker}' の処理中にエラーが発生しました: {exc}")
+            
             results = sorted(all_results, key=lambda x: x.get('profit_margin', 0), reverse=True)
         
         # 検索結果をセッションに保存
