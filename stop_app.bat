@@ -1,6 +1,12 @@
 @echo off
-echo Stopping server with window title "kakaku-analyzer-server"...
-taskkill /FI "WINDOWTITLE eq kakaku-analyzer-server" /T /F
-echo Server stop command executed.
-ping 127.0.0.1 -n 3 > nul
+echo Stopping server...
+if not exist server.pid (
+    echo server.pid not found. Server may not be running.
+    exit /b 0
+)
+set /p PID=<server.pid
+echo Stopping process with PID: %PID%
+taskkill /F /PID %PID%
+del server.pid
+echo Server stopped successfully.
 exit
