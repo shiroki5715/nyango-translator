@@ -92,6 +92,11 @@ def scrape_kakaku_com(category_name: str, filter_keyword: str = None, limit: int
                     relative_url = name_element.get('href')
                     if filter_keyword and filter_keyword.lower() not in name.lower():
                         continue
+                    
+                    # 除外キーワードが含まれているかチェック
+                    if any(keyword in name for keyword in EXCLUDED_KEYWORDS):
+                        continue
+
                     if name and price_text.isdigit() and relative_url:
                         full_url = urllib.parse.urljoin("https://kakaku.com/", relative_url)
                         results.append({"name": name, "price": int(price_text), "url": full_url})
@@ -114,18 +119,33 @@ def scrape_kakaku_com(category_name: str, filter_keyword: str = None, limit: int
 
 import requests
 
-# --- 除外メーカーリスト ---
-EXCLUDED_MAKERS = {
-    "A2ZEON", "ADTEC", "AEXEA", "AFOX", "Antec Memory", "Apacer", "ATP", 
-    "AVANTIUM", "AVEXIR", "CELL SHOCK", "CENTURY MICRO", "CIMA LABORATORY", 
-    "Elixir", "ESSENCORE", "GoldKey", "HI-DISC", "I'M Intelligent Memory", 
-    "ITC", "J&A Information", "Mach Xtreme Technology", "Mushkin Enhanced", 
-    "OCMEMORY", "OCZ", "Patriot Memory", "PQI", "RAMMAX Technology", 
-    "SITAKINGS", "SK hynix", "SPD", "SUPER TALENT", "Thermaltake", "UMeX", 
-    "Walton Chaintech", "Winchip", "WINTEN", "エルピーダメモリ", "ゲイル", 
-    "コンテック", "スイスビット", "ドスパラ", "ノーブランド", "ハギワラシスコム", 
-    "ヤダイ", "リーダーメディアテクノ", "挑戦者", "VIA"
-}
+# --- 除外メーカーリストの読み込み ---
+def load_excluded_makers(file_path: str) -> set:
+    """指定されたファイルから除外メーカーのリストを読み込む"""
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            # ファイルから読み込んだ各行の空白文字を除去し、空行でなければセットに追加
+            return {line.strip() for line in f if line.strip()}
+    except FileNotFoundError:
+        # ファイルが存在しない場合は空のセットを返す
+        logging.warning(f"除外メーカーリストファイル '{file_path}' が見つかりません。")
+        return set()
+
+# アプリケーション起動時に一度だけファイルを読み込む
+EXCLUDED_MAKERS = load_excluded_makers('exclude_makers.txt')
+
+# --- 除外キーワードリストの読み込み ---
+def load_excluded_keywords(file_path: str) -> set:
+    """指定されたファイルから除外キーワードのリストを読み込む"""
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            return {line.strip() for line in f if line.strip()}
+    except FileNotFoundError:
+        logging.warning(f"除外キーワードリストファイル '{file_path}' が見つかりません。")
+        return set()
+
+EXCLUDED_KEYWORDS = load_excluded_keywords('exclude_keywords.txt')
+
 
 def get_makers_for_category(category_name: str):
     log = logging.getLogger(__name__)
