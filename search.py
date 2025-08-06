@@ -52,15 +52,18 @@ def _search_and_compare_for_maker(category_name, filter_keyword, limit, profit_m
 
     maker_results = []
     for item in deduplicated_results:
-        # Amazonで価格情報を取得
-        amazon_result = amazon.scrape_product(item['name'])
+        # 価格.comの商品名から主要な型番を抽出
+        base_name = item['name'].split('[')[0].strip()
+
+        # 抽出した型番でAmazonを検索
+        amazon_result = amazon.scrape_product(base_name)
         
         if amazon_result:
             item['amazon_price'] = amazon_result.get('price')
             item['amazon_url'] = amazon_result.get('url')
         else:
             item['amazon_price'] = None
-            item['amazon_url'] = f"https://www.amazon.co.jp/s?k={urllib.parse.quote(item['name'])}"
+            item['amazon_url'] = f"https://www.amazon.co.jp/s?k={urllib.parse.quote(base_name)}"
         
         # 利益計算
         if item.get('amazon_price') and item.get('price') and item.get('price') > 0:

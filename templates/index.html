@@ -236,9 +236,30 @@
         const searchForm = document.getElementById('searchForm');
         const searchButton = document.getElementById('searchButton');
 
+        const handleBeforeUnload = (e) => {
+            // 標準的な警告メッセージを表示させるための設定
+            e.preventDefault();
+            e.returnValue = '';
+        };
+
         searchForm.addEventListener('submit', function() {
+            // ボタンをローディング状態にする
             searchButton.disabled = true;
             searchButton.classList.add('loading');
+
+            // ページを離れる際に警告を表示するイベントリスナーを登録
+            window.addEventListener('beforeunload', handleBeforeUnload);
+        });
+
+        // ページの読み込みが完了したら、不要になったリスナーを削除する
+        // (結果表示ページや、フォーム送信後に戻ってきた場合のため)
+        window.addEventListener('pageshow', function() {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+            // もしボタンがローディング状態のままなら解除する
+            if (searchButton.classList.contains('loading')) {
+                searchButton.disabled = false;
+                searchButton.classList.remove('loading');
+            }
         });
     </script>
 </body>
