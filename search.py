@@ -4,10 +4,10 @@ import urllib.parse
 import concurrent.futures
 from scrapers import kakaku, amazon
 
-def _deduplicate_products(products: list) -> list:
+def _deduplicate_products(products: list, category_name: str) -> list:
     """
     製品リストから重複を排除する。
-    製品名の最初の3要素をキーとし、価格が最も安いものを採用する。
+    カテゴリに応じて最適なキーを生成し、価格が最も安いものを採用する。
     """
     log = logging.getLogger(__name__)
     log.info(f"取得した {len(products)} 件の製品から重複を排除します...")
@@ -16,8 +16,13 @@ def _deduplicate_products(products: list) -> list:
     for item in products:
         # 製品名からメーカー名 [〇〇] や【〇〇】を削除
         base_name = re.sub(r'[\[【].*?[\]】]', '', item['name']).strip()
-        # 製品名をスペースで分割し、最初の3要素をキーとする
-        product_key = ' '.join(base_name.split()[:3])
+
+        if category_name == 'マザーボード':
+            # マザーボードの場合：丸括弧のみを削除し、中のスペック情報（DDR4など）は残す
+            product_key = re.sub(r'[()]', '', base_name).strip()
+        else:
+            # その他のカテゴリの場合：製品名の最初の単語（=型番）をキーとする
+            product_key = base_name.split()[0]
 
         # 辞書にキーが存在しないか、存在しても現在の価格の方が安い場合は登録/更新
         if product_key not in unique_products or item['price'] < unique_products[product_key]['price']:
@@ -48,22 +53,29 @@ def _search_and_compare_for_maker(category_name, filter_keyword, limit, profit_m
         return []
 
     # 重複排除
-    deduplicated_results = _deduplicate_products(kakaku_results)
+    deduplicated_results = _deduplicate_products(kakaku_results, category_name)
 
     maker_results = []
     for item in deduplicated_results:
-        # 価格.comの商品名から主要な型番を抽出
-        base_name = item['name'].split('[')[0].strip()
+        # 製品名から不要な部分を削除
+        base_name = re.sub(r'[\[【].*?[\]】]', '', item['name']).strip()
+
+        if category_name == 'マザーボード':
+            # マザーボードの場合：丸括弧のみを削除し、中のスペック情報（DDR4など）は残す
+            search_keyword = re.sub(r'[()]', '', base_name).strip()
+        else:
+            # その他のカテゴリの場合：製品名の最初の単語（=型番）を使用
+            search_keyword = base_name.split()[0]
 
         # 抽出した型番でAmazonを検索
-        amazon_result = amazon.scrape_product(base_name)
+        amazon_result = amazon.scrape_product(search_keyword)
         
         if amazon_result:
             item['amazon_price'] = amazon_result.get('price')
             item['amazon_url'] = amazon_result.get('url')
         else:
             item['amazon_price'] = None
-            item['amazon_url'] = f"https://www.amazon.co.jp/s?k={urllib.parse.quote(base_name)}"
+            item['amazon_url'] = f"https://www.amazon.co.jp/s?k={urllib.parse.quote(search_keyword)}"
         
         # 利益計算
         if item.get('amazon_price') and item.get('price') and item.get('price') > 0:

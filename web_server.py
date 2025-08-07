@@ -89,4 +89,4 @@ if __name__ == '__main__':
     # アプリケーション起動時に一度だけメーカーリストを読み込む
     preload_thread = threading.Thread(target=preload_maker_lists, daemon=True)
     preload_thread.start()
-    app.run(host='0.0.0.0', port=5000, debug=False)
+    app.run(host='0.0.0.0', port=5001, debug=False)

@@ -52,6 +52,8 @@ def scrape_product(product_name: str):
             if price_element and url_element:
                 price = int(price_element.get_text(strip=True).replace(',', ''))
                 url = urllib.parse.urljoin("https://www.amazon.co.jp/", url_element.get('href'))
+                # URLからフラグメント（#以降）を削除
+                url = url.split('#')[0]
                 log.info(f"    -> Amazon価格: ¥{price:,}")
                 return {"price": price, "url": url}
             else:
